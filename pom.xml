@@ -9,9 +9,9 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>model</module>
         <module>core</module>
         <module>dto</module>
-        <module>model</module>
         <module>server</module>
     </modules>
 
