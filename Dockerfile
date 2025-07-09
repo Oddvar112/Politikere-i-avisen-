@@ -1,4 +1,7 @@
-FROM maven:3.9-openjdk-17 AS build
+FROM amazoncorretto:17-alpine AS build
+
+# Install Maven
+RUN apk add --no-cache maven
 
 WORKDIR /app
 
@@ -19,7 +22,7 @@ COPY . .
 RUN mvn clean package -DskipTests -B
 
 # Runtime stage
-FROM openjdk:17-jre
+FROM amazoncorretto:17-alpine
 
 WORKDIR /app
 
