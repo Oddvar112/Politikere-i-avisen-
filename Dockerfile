@@ -12,6 +12,9 @@ COPY core/pom.xml core/
 COPY dto/pom.xml dto/
 COPY server/pom.xml server/
 
+# Give execute permission to mvnw
+RUN chmod +x ./mvnw
+
 # Download dependencies
 RUN ./mvnw dependency:go-offline
 
