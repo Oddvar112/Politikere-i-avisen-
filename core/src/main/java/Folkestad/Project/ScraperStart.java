@@ -73,10 +73,6 @@ public final class ScraperStart {
         if (!personsToSave.isEmpty()) {
             personRepository.saveAll(personsToSave);
         }
-        extractor.close();
-
-        System.out.println("Personer lagret i databasen med tilhørende artikkellenker. "
-            + "Antall personer behandlet: " + allPersonNames.size()
-            + ", Antall personer lagret/oppdatert: " + personsToSave.size());
     }
 }
+
