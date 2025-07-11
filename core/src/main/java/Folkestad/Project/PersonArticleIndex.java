@@ -1,11 +1,13 @@
 package Folkestad.Project;
 
+import lombok.Getter;
 import java.util.*;
 
 /**
  * Holder oversikt over hvilke artikler hver person er nevnt i.
  */
 public class PersonArticleIndex {
+    @Getter
     private final Map<String, Set<String>> index = new HashMap<>();
 
     /**
@@ -29,12 +31,5 @@ public class PersonArticleIndex {
      */
     public Set<String> getArticlesForPerson(String person) {
         return index.getOrDefault(person, Collections.emptySet());
-    }
-
-    /**
-     * Henter hele indeksen.
-     */
-    public Map<String, Set<String>> getIndex() {
-        return index;
     }
 }
