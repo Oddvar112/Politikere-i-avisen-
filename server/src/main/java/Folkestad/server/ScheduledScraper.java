@@ -20,7 +20,7 @@ public class ScheduledScraper {
     public void runScraperOnStartup() {
         logger.info("Kjører scraper ved oppstart...");
         try {
-            scraperStart.startScraping();
+            //scraperStart.startScraping();
             logger.info("Scraper ved oppstart fullført.");
         } catch (Exception e) {
             logger.error("Feil ved oppstart av scraper: ", e);
@@ -31,7 +31,7 @@ public class ScheduledScraper {
     public void runScraper() {
         logger.info("Kjører planlagt scraper...");
         try {
-            scraperStart.startScraping();
+           // scraperStart.startScraping();
             logger.info("Planlagt scraper fullført.");
         } catch (Exception e) {
             logger.error("Feil ved planlagt scraping: ", e);
