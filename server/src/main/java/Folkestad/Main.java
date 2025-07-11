@@ -1,4 +1,4 @@
-package Folkestad;
+package folkestad;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,21 +12,21 @@ import org.slf4j.LoggerFactory;
  * The main class for the Server Application.
  * This class is responsible for bootstrapping the Spring Boot application.
  */
-@SpringBootApplication(scanBasePackages = {"Folkestad"})
-@EntityScan("Folkestad")
-@EnableJpaRepositories("Folkestad")
+@SpringBootApplication(scanBasePackages = {"folkestad"})
+@EntityScan("folkestad")
+@EnableJpaRepositories("folkestad")
 @EnableScheduling
 public class Main {
-    
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
-    
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+
     /**
      * The main method which serves as the entry point for the Spring Boot application.
      *
      * @param args command-line arguments passed to the application
      */
     public static void main(final String[] args) {
-        logger.info("Starter applikasjonen med scheduling aktivert...");
+        LOGGER.info("Starter applikasjonen med scheduling aktivert...");
         SpringApplication.run(Main.class, args);
     }
 }
