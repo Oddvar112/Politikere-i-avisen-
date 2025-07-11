@@ -1,6 +1,9 @@
-package Folkestad.Project;
+package folkestad.project;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -23,11 +26,14 @@ public class NorwegianNameExtractor {
     /**
      * Ekstraherer og returnerer alle navn fra en tekst, med all logikk for merging og filtrering.
      * Kjør norsk regex på hele teksten, så kjør NLP på alle regex-funnede navn.
+     *
+     * @param text teksten som skal analyseres for navn
+     * @return sett med ekstraherte navn
      */
-    public Set<String> extractNames(String text) {
+    public Set<String> extractNames(final String text) {
         Set<String> regexNames = new HashSet<>(extractNamesWithRegex(text));
         Set<String> finalNames = new HashSet<>();
-        
+
         for (String candidate : regexNames) {
             List<String> nlpNames = nlpProcessor.extractPersonNames(candidate);
             finalNames.addAll(nlpNames);
@@ -37,8 +43,11 @@ public class NorwegianNameExtractor {
 
     /**
      * Bruker norsk regex for å hente ut navn direkte fra tekst, og filtrerer med isValidNorwegianName.
+     *
+     * @param text teksten som skal analyseres
+     * @return liste med navn funnet av regex
      */
-    private List<String> extractNamesWithRegex(String text) {
+    private List<String> extractNamesWithRegex(final String text) {
         List<String> names = new ArrayList<>();
         Matcher matcher = NAME_REGEX.matcher(text);
         while (matcher.find()) {
@@ -52,25 +61,13 @@ public class NorwegianNameExtractor {
 
     /**
      * Sjekker om navnet matcher norsk navneregex.
+     *
+     * @param name navnet som skal valideres
+     * @return true hvis navnet er gyldig, false ellers
      */
-    private boolean isValidNorwegianName(String name) {
+    private boolean isValidNorwegianName(final String name) {
         Matcher matcher = NAME_REGEX.matcher(name);
         return matcher.matches();
     }
-
-    /**
-     * Lukker CoreNLP processor og frigjør ressurser.
-     * Bør kalles når NorwegianNameExtractor ikke lenger skal brukes.
-     */
-    public void close() {
-        if (nlpProcessor != null) {
-            nlpProcessor.close();
-        }
-    }
-
-    public static void main(String[] args) {
-        String text = "Ola Nordmann og Kari Nordmann gikk til Oslo sammen med Per Arne Hansen. I parken møtte de Anne-Marie Johansen, Lars Ove Nilsen og Siri. Senere kom også Pål Ødegård, Åse-Berit Olsen og Knut. På kafeen satt Eva-Lill Andersen, Jon Olav Ryen, og en venn som het Magnus. I avisen sto det om Henrik Ibsen, men også om Ola Nordmann. Noen ropte: «Hei, Kari Nordmann!» og «Kom hit, Per Arne!». Til slutt kom også Sigrid Undset, Bjørn Eidsvåg, og en ukjent person som bare ble kalt «Mann». ";
-        NorwegianNameExtractor extractor = new NorwegianNameExtractor();
-        System.out.println(extractor.extractNames(text));
-    }
 }
+
