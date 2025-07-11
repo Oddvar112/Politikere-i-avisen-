@@ -1,4 +1,4 @@
-package Folkestad.Project;
+package folkestad.project;
 
 import java.util.function.Predicate;
 import org.jsoup.nodes.Document;
@@ -20,7 +20,7 @@ public class IsNrkArticlePredicate implements Predicate<Document> {
      * @return true if the document is an article, false otherwise
      */
     @Override
-    public boolean test(Document doc) {
+    public boolean test(final Document doc) {
         boolean isArticle = false;
         Elements metaTags = doc.select("meta[name=author]");
         String authorContent = metaTags.attr("content");
