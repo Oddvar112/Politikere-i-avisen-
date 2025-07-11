@@ -1,4 +1,4 @@
-package Folkestad.Project;
+package folkestad.project;
 
 import java.util.Arrays;
 
@@ -21,7 +21,7 @@ public enum NewsFeed {
     private final String displayName;
     private final String url;
 
-    NewsFeed(String displayName, String url) {
+    NewsFeed(final String displayName, final String url) {
         this.displayName = displayName;
         this.url = url;
     }
@@ -37,9 +37,14 @@ public enum NewsFeed {
     /**
      * Returnerer alle NewsFeed-verdier for en gitt kilde (f.eks. "vg", "nrk", "e24", "tv2").
      * Kildenavn er case-insensitive og matcher dynamisk på enum-navn.
+     *
+     * @param source kildenavn som skal søkes etter
+     * @return array med NewsFeed-verdier som matcher kilden
      */
-    public static NewsFeed[] getFeedsBySource(String source) {
-        if (source == null) return new NewsFeed[0];
+    public static NewsFeed[] getFeedsBySource(final String source) {
+        if (source == null) {
+            return new NewsFeed[0];
+        }
         String src = source.trim().toLowerCase();
         return Arrays.stream(values())
                 .filter(feed -> feed.name().toLowerCase().startsWith(src + "_"))
