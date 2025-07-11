@@ -3,19 +3,22 @@ package Folkestad.Project;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.CoreDocument;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 
 /**
- * NorwegianNameExtractor bruker Stanford CoreNLP og norsk regex for å finne og telle forekomster av norske personnavn i en tekst.
+ * NorwegianNameExtractor bruker CoreNLPProcessor og norsk regex for å finne og telle forekomster av norske personnavn i en tekst.
  */
 public class NorwegianNameExtractor {
     private static final Pattern NAME_REGEX = Pattern.compile(
-        "[A-ZÆØÅ][a-zæøå]+[ \\-][A-ZÆØÅ][a-zæøå]+"
+        "[A-ZÆØÅ][a-zæøå]+(?:[ \\-][A-ZÆØÅ][a-zæøå]+){1,2}"
     );
-    private static final String PIPELINE_COMPONENTS = "tokenize, ssplit, pos, lemma, ner";
+    private final CoreNLPProcessor nlpProcessor;
+
+    /**
+     * Konstruktør som oppretter NorwegianNameExtractor med CoreNLP processor.
+     */
+    public NorwegianNameExtractor() {
+        this.nlpProcessor = new CoreNLPProcessor();
+    }
 
     /**
      * Ekstraherer og returnerer alle navn fra en tekst, med all logikk for merging og filtrering.
@@ -24,13 +27,12 @@ public class NorwegianNameExtractor {
     public Set<String> extractNames(String text) {
         Set<String> regexNames = new HashSet<>(extractNamesWithRegex(text));
         Set<String> finalNames = new HashSet<>();
-        StanfordCoreNLP pipeline = createPipeline();
+        
         for (String candidate : regexNames) {
-            for (String nlpName : extractCandidateNamesFromText(candidate, pipeline)) {
-                finalNames.add(nlpName);
-            }
+            List<String> nlpNames = nlpProcessor.extractPersonNames(candidate);
+            finalNames.addAll(nlpNames);
         }
-        return (finalNames);
+        return finalNames;
     }
 
     /**
@@ -49,48 +51,21 @@ public class NorwegianNameExtractor {
     }
 
     /**
-     * Kjører CoreNLP pipeline og henter ut kandidatnavn fra tokens for en tekstbit.
-     */
-    private List<String> extractCandidateNamesFromText(String text, StanfordCoreNLP pipeline) {
-        CoreDocument document = new CoreDocument(text);
-        pipeline.annotate(document);
-        List<String> names = new ArrayList<>();
-        StringBuilder currentName = new StringBuilder();
-        for (CoreLabel token : document.tokens()) {
-            String entity = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
-            String word = token.originalText();
-            if ("PERSON".equals(entity)) {
-                if (currentName.length() > 0) currentName.append(" ");
-                currentName.append(word);
-            } else {
-                if (currentName.length() > 0) {
-                    names.add(currentName.toString());
-                    currentName.setLength(0);
-                }
-            }
-        }
-        if (currentName.length() > 0) {
-            names.add(currentName.toString());
-        }
-        return names;
-    }
-
-    /**
-     * Oppretter og konfigurerer StanfordCoreNLP pipeline.
-     */
-    private StanfordCoreNLP createPipeline() {
-        Properties props = new Properties();
-        props.setProperty("annotators", PIPELINE_COMPONENTS);
-        props.setProperty("coref.algorithm", "neural");
-        return new StanfordCoreNLP(props);
-    }
-
-    /**
      * Sjekker om navnet matcher norsk navneregex.
      */
     private boolean isValidNorwegianName(String name) {
         Matcher matcher = NAME_REGEX.matcher(name);
         return matcher.matches();
+    }
+
+    /**
+     * Lukker CoreNLP processor og frigjør ressurser.
+     * Bør kalles når NorwegianNameExtractor ikke lenger skal brukes.
+     */
+    public void close() {
+        if (nlpProcessor != null) {
+            nlpProcessor.close();
+        }
     }
 
     public static void main(String[] args) {
