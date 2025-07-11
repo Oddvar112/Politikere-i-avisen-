@@ -1,7 +1,12 @@
-package Folkestad.Project;
+package folkestad.project;
 
 import lombok.Getter;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Holder oversikt over hvilke artikler hver person er nevnt i.
@@ -12,15 +17,21 @@ public class PersonArticleIndex {
 
     /**
      * Legger til en artikkellenke for en person.
+     *
+     * @param person person som skal knyttes til artikkelen
+     * @param articleUrl URL til artikkelen
      */
-    public void addMention(String person, String articleUrl) {
+    public void addMention(final String person, final String articleUrl) {
         index.computeIfAbsent(person, k -> new HashSet<>()).add(articleUrl);
     }
 
     /**
      * Legger til flere personer for én artikkel.
+     *
+     * @param persons collection av personer som skal knyttes til artikkelen
+     * @param articleUrl URL til artikkelen
      */
-    public void addMentions(Collection<String> persons, String articleUrl) {
+    public void addMentions(final Collection<String> persons, final String articleUrl) {
         for (String person : persons) {
             addMention(person, articleUrl);
         }
@@ -28,8 +39,11 @@ public class PersonArticleIndex {
 
     /**
      * Henter alle artikler en person er nevnt i.
+     *
+     * @param person personen som skal søkes etter
+     * @return sett med artikkel-URLer hvor personen er nevnt
      */
-    public Set<String> getArticlesForPerson(String person) {
+    public Set<String> getArticlesForPerson(final String person) {
         return index.getOrDefault(person, Collections.emptySet());
     }
 }
