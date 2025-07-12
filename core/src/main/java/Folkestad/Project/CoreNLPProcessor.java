@@ -17,9 +17,6 @@ public class CoreNLPProcessor {
     private static final String PIPELINE_COMPONENTS = "tokenize, ssplit, pos, lemma, ner";
     private StanfordCoreNLP pipeline;
 
-    /**
-     * Konstruktør som oppretter og konfigurerer CoreNLP pipeline.
-     */
     public CoreNLPProcessor() {
         this.pipeline = createPipeline();
     }
@@ -54,7 +51,6 @@ public class CoreNLPProcessor {
             }
         }
 
-        // Legg til siste navn hvis det ikke ble lagt til i løkken
         if (currentName.length() > 0) {
             names.add(currentName.toString());
         }
