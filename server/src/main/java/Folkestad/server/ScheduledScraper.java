@@ -23,10 +23,10 @@ public final class ScheduledScraper {
      */
     @PostConstruct
     public void runScraperOnStartup() {
-        LOGGER.info("Kjører scraper ved oppstart...");
+        LOGGER.info("Kjører scraper ved oppstart från alla nyhetssidor...");
         try {
-            //scraperStart.startScraping();
-            LOGGER.info("Scraper ved oppstart fullført.");
+            scraperStart.startScrapingKandidatNames();
+            LOGGER.info("Scraper ved oppstart fullført for alla nyhetssidor.");
         } catch (Exception e) {
             LOGGER.error("Feil ved oppstart av scraper: ", e);
         }
@@ -39,10 +39,10 @@ public final class ScheduledScraper {
      */
     @Scheduled(fixedRate = 28800000) // 8 timer i millisekunder
     public void runScraper() {
-        LOGGER.info("Kjører planlagt scraper...");
+        LOGGER.info("Kjører planlagt scraper från alla nyhetssidor...");
         try {
-           // scraperStart.startScraping();
-            LOGGER.info("Planlagt scraper fullført.");
+            scraperStart.startScrapingKandidatNames();
+            LOGGER.info("Planlagt scraper fullført för alla nyhetssidor.");
         } catch (Exception e) {
             LOGGER.error("Feil ved planlagt scraping: ", e);
         }
