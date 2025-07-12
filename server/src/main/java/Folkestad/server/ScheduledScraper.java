@@ -23,11 +23,22 @@ public final class ScheduledScraper {
      */
     @PostConstruct
     public void runScraperOnStartup() {
+        LOGGER.info("=== Starter scraper ved oppstart ===");
         try {
+            LOGGER.info("Initialiserer candidate name extractor...");
+            long startTime = System.currentTimeMillis();
+            
             scraperStart.startScrapingKandidatNames();
+            
+            long endTime = System.currentTimeMillis();
+            LOGGER.info("=== Scraper fullført på {} ms ===", (endTime - startTime));
+            
         } catch (Exception e) {
-            LOGGER.error("Feil ved oppstart av scraper: ", e);
+            LOGGER.error("KRITISK FEIL ved oppstart av scraper: ", e);
+            // Log stacktrace også
+            LOGGER.error("Stacktrace: ", e);
         }
+        LOGGER.info("=== PostConstruct metode fullført ===");
     }
 
     /**
@@ -37,8 +48,12 @@ public final class ScheduledScraper {
      */
     @Scheduled(fixedRate = 28800000) // 8 timer i millisekunder
     public void runScraper() {
+        LOGGER.info("=== Starter planlagt scraper ===");
         try {
+            long startTime = System.currentTimeMillis();
             scraperStart.startScrapingKandidatNames();
+            long endTime = System.currentTimeMillis();
+            LOGGER.info("=== Planlagt scraper fullført på {} ms ===", (endTime - startTime));
         } catch (Exception e) {
             LOGGER.error("Feil ved planlagt scraping: ", e);
         }
