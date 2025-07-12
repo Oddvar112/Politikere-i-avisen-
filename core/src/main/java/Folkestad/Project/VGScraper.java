@@ -1,7 +1,6 @@
 package folkestad.project;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -30,7 +29,8 @@ public class VGScraper extends Scraper {
      * @param doc the frontpage document
      * @return list of article links
      */
-    private ArrayList<String> getAllLinksFromFrontpage(final Document doc) {
+    @Override
+    protected ArrayList<String> getLinks(final Document doc) {
         Elements articles = doc.select("main article");
         ArrayList<String> articleLinks = new ArrayList<>();
         
@@ -103,20 +103,6 @@ public class VGScraper extends Scraper {
      * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
      */
     public PersonArticleIndex buildPersonArticleIndexEfficient(final NorwegianNameExtractor extractor) {
-        PersonArticleIndex index = new PersonArticleIndex();
-
-        ArrayList<String> allLinks = getAllLinksFromFrontpage(super.connectToSite(getUrl()));
-
-        allLinks.parallelStream()
-            .map(this::connectToSite)
-            .filter(articlePredicate)
-            .forEach(doc -> {
-                String articleUrl = doc.location();
-                String text = getAllText(doc);
-                Set<String> names = extractor.extractNames(text);
-                index.addMentions(names, articleUrl);
-            });
-
-        return index;
+        return super.buildPersonArticleIndexEfficient(extractor, articlePredicate);
     }
 }

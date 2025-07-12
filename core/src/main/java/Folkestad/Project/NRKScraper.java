@@ -1,7 +1,6 @@
 package folkestad.project;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -29,7 +28,8 @@ public class NRKScraper extends Scraper {
      * @param doc the RSS feed document
      * @return list of article links
      */
-    private ArrayList<String> getAllLinksFromRss(final Document doc) {
+    @Override
+    protected ArrayList<String> getLinks(final Document doc) {
         Elements links = doc.select("item > link");
         return links.stream().map(link -> link.text()).collect(Collectors.toCollection(ArrayList::new));
     }
@@ -54,22 +54,6 @@ public class NRKScraper extends Scraper {
      * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
      */
     public PersonArticleIndex buildPersonArticleIndexEfficient(final NorwegianNameExtractor extractor) {
-        PersonArticleIndex index = new PersonArticleIndex();
-
-        // Hent alle lenker fra RSS-feed
-        ArrayList<String> allLinks = getAllLinksFromRss(super.connectToSite(getUrl()));
-
-        // Filtrer og prosesser artikler i én operasjon
-        allLinks.parallelStream()
-            .map(this::connectToSite)
-            .filter(articlePredicate)
-            .forEach(doc -> {
-                String articleUrl = doc.location();
-                String text = getAllText(doc);
-                Set<String> names = extractor.extractNames(text);
-                index.addMentions(names, articleUrl);
-            });
-
-        return index;
+        return super.buildPersonArticleIndexEfficient(extractor, articlePredicate);
     }
 }

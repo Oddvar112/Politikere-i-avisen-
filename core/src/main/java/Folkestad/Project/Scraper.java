@@ -1,5 +1,8 @@
 package folkestad.project;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.function.Predicate;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 /**
@@ -8,7 +11,7 @@ import org.jsoup.nodes.Document;
  * Provides basic functionality for connecting to a web page and extracting text.
  * </p>
  */
-public class Scraper {
+public abstract class Scraper {
     private Document doc;
     private String tekst;
     private String url;
@@ -66,5 +69,38 @@ public class Scraper {
      */
     public String getUrl() {
         return url;
+    }
+
+    /**
+     * Abstract method that subclasses must implement to get links from their source.
+     * @param doc the source document (RSS feed, frontpage, etc.)
+     * @return list of article links
+     */
+    protected abstract ArrayList<String> getLinks(Document doc);
+
+    /**
+     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én operasjon.
+     * Dette unngår å koble seg opp til samme artikkel flere ganger.
+     * @param extractor NorwegianNameExtractor-instans
+     * @param articlePredicate predicate for å filtrere ut kun ekte artikler
+     * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
+     */
+    public PersonArticleIndex buildPersonArticleIndexEfficient(final NorwegianNameExtractor extractor, 
+                                                              final Predicate<Document> articlePredicate) {
+        PersonArticleIndex index = new PersonArticleIndex();
+
+        ArrayList<String> allLinks = getLinks(connectToSite(getUrl()));
+
+        allLinks.parallelStream()
+            .map(this::connectToSite)
+            .filter(articlePredicate)
+            .forEach(doc -> {
+                String articleUrl = doc.location();
+                String text = getAllText(doc);
+                Set<String> names = extractor.extractNames(text);
+                index.addMentions(names, articleUrl);
+            });
+
+        return index;
     }
 }
