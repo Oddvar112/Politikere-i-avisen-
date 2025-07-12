@@ -1,10 +1,12 @@
 package folkestad;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +17,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "kandidat_stortingsvalg")
@@ -67,4 +71,32 @@ public class KandidatStortingsvalg {
 
     @Column(name = "kjoenn")
     private String kjoenn;
+
+    @OneToMany(mappedBy = "kandidat", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<KandidatLink> links = new HashSet<>();
+
+    /**
+     * Legger til en KandidatLink og sikrer bidireksjonell synkronisering.
+     * 
+     * @param kandidatLink KandidatLink som skal legges til
+     */
+    public void addLink(KandidatLink kandidatLink) {
+        if (kandidatLink != null) {
+            this.links.add(kandidatLink);
+            kandidatLink.setKandidat(this);
+        }
+    }
+
+    /**
+     * Fjerner en KandidatLink og sikrer bidireksjonell synkronisering.
+     * 
+     * @param kandidatLink KandidatLink som skal fjernes
+     */
+    public void removeLink(KandidatLink kandidatLink) {
+        if (kandidatLink != null) {
+            this.links.remove(kandidatLink);
+            kandidatLink.setKandidat(null);
+        }
+    }
 }
