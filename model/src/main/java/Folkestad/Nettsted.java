@@ -5,33 +5,45 @@ import java.util.Optional;
 import lombok.Getter;
 
 /**
- * Enum som representerer forskjellige nyhetssider med deres URL-mønstre og RSS-feeder.
+ * Enum som representerer forskjellige nyhetssider med deres URL-mønstre og kildeURLer.
  * Inneholder metoder for å identifisere hvilken nyhetsside en URL tilhører.
+ * Støtter både RSS-feeds og frontpage DOM-scraping.
  */
 @Getter
 public enum Nettsted {
     
-    NRK("NRK", "https://www.nrk.no/toppsaker.rss", "nrk.no"),
-    VG("VG", "https://www.vg.no/rss/feed/", "vg.no"),
-    E24("E24", "https://e24.no/rss", "e24.no"),
-    AFTENPOSTEN("Aftenposten", "https://www.aftenposten.no/rss", "aftenposten.no"),
-    DAGBLADET("Dagbladet", "https://www.dagbladet.no/rss", "dagbladet.no");
+    NRK("NRK", "https://www.nrk.no/toppsaker.rss", "nrk.no", ScrapingMethod.RSS),
+    VG("VG", "https://www.vg.no/", "vg.no", ScrapingMethod.FRONTPAGE_DOM),
+    E24("E24", "https://e24.no/rss", "e24.no", ScrapingMethod.RSS),
+    AFTENPOSTEN("Aftenposten", "https://www.aftenposten.no/rss", "aftenposten.no", ScrapingMethod.RSS),
+    DAGBLADET("Dagbladet", "https://www.dagbladet.no/rss", "dagbladet.no", ScrapingMethod.RSS);
+
+    /**
+     * Enum for å beskrive hvordan nettsiden scrapers.
+     */
+    public enum ScrapingMethod {
+        RSS,           // Scraper via RSS feed
+        FRONTPAGE_DOM  // Scraper via DOM på frontpage
+    }
 
     private final String displayName;
-    private final String rssUrl;
+    private final String sourceUrl;  // RSS URL eller frontpage URL
     private final String domain;
+    private final ScrapingMethod scrapingMethod;
 
     /**
      * Konstruktør for Nettsted enum.
      *
      * @param displayName Visningsnavn for nyhetssiden
-     * @param rssUrl RSS-feed URL for nyhetssiden
+     * @param sourceUrl RSS-feed URL eller frontpage URL for nyhetssiden
      * @param domain Domene for nyhetssiden (brukes for URL-gjenkjennelse)
+     * @param scrapingMethod Metode for scraping (RSS eller DOM)
      */
-    Nettsted(String displayName, String rssUrl, String domain) {
+    Nettsted(String displayName, String sourceUrl, String domain, ScrapingMethod scrapingMethod) {
         this.displayName = displayName;
-        this.rssUrl = rssUrl;
+        this.sourceUrl = sourceUrl;
         this.domain = domain;
+        this.scrapingMethod = scrapingMethod;
     }
 
     /**
@@ -55,14 +67,60 @@ public enum Nettsted {
     }
 
     /**
-     * Returnerer en array med alle tilgjengelige RSS-URLer.
+     * Returnerer en array med alle tilgjengelige kilde-URLer (RSS eller frontpage).
+     *
+     * @return Array med kilde-URLer
+     */
+    public static String[] getAllSourceUrls() {
+        return Arrays.stream(Nettsted.values())
+                .map(Nettsted::getSourceUrl)
+                .toArray(String[]::new);
+    }
+
+    /**
+     * Returnerer en array med alle RSS-URLer (kun de som bruker RSS).
      *
      * @return Array med RSS-URLer
      */
     public static String[] getAllRssUrls() {
         return Arrays.stream(Nettsted.values())
-                .map(Nettsted::getRssUrl)
+                .filter(nettsted -> nettsted.scrapingMethod == ScrapingMethod.RSS)
+                .map(Nettsted::getSourceUrl)
                 .toArray(String[]::new);
+    }
+
+    /**
+     * Returnerer en array med alle frontpage-URLer (kun de som bruker DOM-scraping).
+     *
+     * @return Array med frontpage-URLer
+     */
+    public static String[] getAllFrontpageUrls() {
+        return Arrays.stream(Nettsted.values())
+                .filter(nettsted -> nettsted.scrapingMethod == ScrapingMethod.FRONTPAGE_DOM)
+                .map(Nettsted::getSourceUrl)
+                .toArray(String[]::new);
+    }
+
+    /**
+     * Returnerer alle nettsteder som bruker RSS.
+     *
+     * @return Array med Nettsted som bruker RSS
+     */
+    public static Nettsted[] getRssSites() {
+        return Arrays.stream(Nettsted.values())
+                .filter(nettsted -> nettsted.scrapingMethod == ScrapingMethod.RSS)
+                .toArray(Nettsted[]::new);
+    }
+
+    /**
+     * Returnerer alle nettsteder som bruker frontpage DOM-scraping.
+     *
+     * @return Array med Nettsted som bruker DOM-scraping
+     */
+    public static Nettsted[] getFrontpageSites() {
+        return Arrays.stream(Nettsted.values())
+                .filter(nettsted -> nettsted.scrapingMethod == ScrapingMethod.FRONTPAGE_DOM)
+                .toArray(Nettsted[]::new);
     }
 
     /**
@@ -102,8 +160,35 @@ public enum Nettsted {
         return parseFromUrl(url).isPresent();
     }
 
+    /**
+     * Kontrollerer om dette nettstedet bruker RSS.
+     *
+     * @return true hvis nettstedet bruker RSS, false ellers
+     */
+    public boolean usesRss() {
+        return this.scrapingMethod == ScrapingMethod.RSS;
+    }
+
+    /**
+     * Kontrollerer om dette nettstedet bruker frontpage DOM-scraping.
+     *
+     * @return true hvis nettstedet bruker DOM-scraping, false ellers
+     */
+    public boolean usesFrontpageDom() {
+        return this.scrapingMethod == ScrapingMethod.FRONTPAGE_DOM;
+    }
+
+    /**
+     * Legacy method - returnerer sourceUrl for bakoverkompatibilitet.
+     * @deprecated Bruk getSourceUrl() i stedet
+     */
+    @Deprecated
+    public String getRssUrl() {
+        return this.sourceUrl;
+    }
+
     @Override
     public String toString() {
-        return displayName;
+        return displayName + " (" + scrapingMethod + ")";
     }
 }
