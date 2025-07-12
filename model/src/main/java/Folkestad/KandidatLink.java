@@ -35,7 +35,7 @@ public class KandidatLink {
     private Nettsted nettsted;
 
     @ManyToOne
-    @JoinColumn(name = "kandidat_id", nullable = false)
+    @JoinColumn(name = "kandidat_navn", nullable = false)
     private KandidatStortingsvalg kandidat;
 
     /**
