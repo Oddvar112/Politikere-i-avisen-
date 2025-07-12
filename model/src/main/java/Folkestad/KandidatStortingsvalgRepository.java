@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface KandidatStortingsvalgRepository extends JpaRepository<KandidatStortingsvalg, Long> {
+public interface KandidatStortingsvalgRepository extends JpaRepository<KandidatStortingsvalg, String> {
 
     /**
      * Finn alle kandidater for et bestemt valgdistrikt.
