@@ -18,7 +18,7 @@ public class PersonArticleIndex {
     /**
      * Legger til en artikkellenke for en person.
      *
-     * @param person person som skal knyttes til artikkelen
+     * @param person personen som skal knyttes til artikkelen
      * @param articleUrl URL til artikkelen
      */
     public void addMention(final String person, final String articleUrl) {
@@ -28,7 +28,7 @@ public class PersonArticleIndex {
     /**
      * Legger til flere personer for én artikkel.
      *
-     * @param persons collection av personer som skal knyttes til artikkelen
+     * @param persons samling av personer som skal knyttes til artikkelen
      * @param articleUrl URL til artikkelen
      */
     public void addMentions(final Collection<String> persons, final String articleUrl) {

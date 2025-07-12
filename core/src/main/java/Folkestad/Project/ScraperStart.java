@@ -13,13 +13,11 @@ import folkestad.PersonLink;
 import folkestad.KandidatStortingsvalg;
 import folkestad.KandidatStortingsvalgRepository;
 import folkestad.KandidatLink;
-import folkestad.KandidatLinkRepository;
 import folkestad.Nettsted;
 
 /**
- * Component responsible for scraping NRK articles and extracting person names.
- * This class orchestrates the entire scraping process from fetching articles
- * to saving person-article relationships in the database.
+ * Komponent ansvarlig for skraping av NRK-artikler og utvinning av personnavn.
+ * Bruker nå navnbaserte primærnøkler for kandidater, som eliminerer duplikatproblemer.
  */
 @Component
 public final class ScraperStart {
@@ -32,14 +30,9 @@ public final class ScraperStart {
     
     @Autowired
     private KandidatStortingsvalgRepository kandidatRepository;
-    
-    @Autowired
-    private KandidatLinkRepository kandidatLinkRepository;
-
     /**
-     * Starts the scraping process for NRK articles.
-     * Extracts person names from articles and saves them with their associated article links.
-     * Uses efficient database operations to minimize queries and optimize performance.
+     * Starter skrapingprosessen for NRK-artikler.
+     * Ekstraherer personnavn fra artikler og lagrer dem med tilhørende artikkellenker.
      */
     public void startScrapingAllNames() {
         String url = Nettsted.NRK.getRssUrl();
@@ -50,63 +43,39 @@ public final class ScraperStart {
     }
 
     /**
-     * Starts the scraping process for NRK articles using KandidatNameExtractor.
-     * Extracts only candidate names from articles and saves them with their associated article links.
-     * This is more efficient as it only processes politicians/candidates from the database.
+     * Starter skrapingprosessen for kandidatnavn ved hjelp av navnbaserte primærnøkler.
+     * Mye enklere nå som hvert navn er unikt i databasen.
      */
     public void startScrapingKandidatNames() {
-        System.out.println("[DEBUG] Starting startScrapingKandidatNames...");
-        
         String url = Nettsted.NRK.getRssUrl();
-        System.out.println("[DEBUG] RSS URL: " + url);
-        
         NRKScraper scraper = new NRKScraper(url);
-        System.out.println("[DEBUG] Created NRKScraper, about to build PersonArticleIndex...");
-        
         PersonArticleIndex personArticleIndex = scraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
-        System.out.println("[DEBUG] Built PersonArticleIndex successfully!");
-        System.out.println("[DEBUG] PersonArticleIndex has " + personArticleIndex.getAllPersons().size() + " persons");
-        
-        System.out.println("[DEBUG] About to call processAndSaveKandidater...");
         processAndSaveKandidater(personArticleIndex);
-        System.out.println("[DEBUG] startScrapingKandidatNames completed!");
     }
 
     /**
      * Prosesserer og lagrer kandidater og deres lenker fra PersonArticleIndex.
-     * Spesialisert for kandidater som bruker KandidatLink.
+     * Mye enklere nå med navnbaserte primærnøkler - ingen duplikathåndtering nødvendig!
      *
      * @param personArticleIndex indeksen med kandidater og deres artikler
      */
     private void processAndSaveKandidater(PersonArticleIndex personArticleIndex) {
-        System.out.println("[DEBUG] Starting processAndSaveKandidater...");
-        
         Set<String> allKandidatNames = personArticleIndex.getAllPersons();
-        System.out.println("[DEBUG] Found " + allKandidatNames.size() + " persons in PersonArticleIndex");
-        
-        // Hent eksisterende kandidater fra database
-        System.out.println("[DEBUG] About to fetch existing kandidater from database with links...");
-        Map<String, KandidatStortingsvalg> existingKandidatMap = kandidatRepository.findAllWithLinks()
+        List<KandidatStortingsvalg> existingKandidatList = kandidatRepository.findAllWithLinks();
+        Map<String, KandidatStortingsvalg> existingKandidatMap = existingKandidatList
                 .stream()
                 .collect(Collectors.toMap(KandidatStortingsvalg::getNavn, kandidat -> kandidat));
-        System.out.println("[DEBUG] Found " + existingKandidatMap.size() + " existing kandidater in database");
         
         List<KandidatStortingsvalg> kandidaterToSave = new ArrayList<>();
-        
-        System.out.println("[DEBUG] Processing each kandidat name...");
-        int processedCount = 0;
         for (String kandidatName : allKandidatNames) {
-            processedCount++;
-            if (processedCount % 10 == 0) {
-                System.out.println("[DEBUG] Processed " + processedCount + " out of " + allKandidatNames.size() + " kandidat names");
-            }
-            
             KandidatStortingsvalg kandidat = existingKandidatMap.get(kandidatName);
-            if (kandidat != null) { // Bare behandle eksisterende kandidater
+            if (kandidat != null) { // Kandidat finnes i databasen
                 Set<String> articleUrlsForKandidat = personArticleIndex.getArticlesForPerson(kandidatName);
+                
                 Set<String> existingLinks = kandidat.getLinks().stream()
                         .map(KandidatLink::getLink)
                         .collect(Collectors.toSet());
+                
                 boolean hasNewLinks = false;
                 for (String articleUrl : articleUrlsForKandidat) {
                     if (!existingLinks.contains(articleUrl)) {
@@ -115,28 +84,20 @@ public final class ScraperStart {
                         hasNewLinks = true;
                     }
                 }
+                
                 if (hasNewLinks) {
                     kandidaterToSave.add(kandidat);
                 }
             }
         }
         
-        System.out.println("[DEBUG] Finished processing all kandidat names. " + kandidaterToSave.size() + " kandidater to save");
-        
         if (!kandidaterToSave.isEmpty()) {
-            System.out.println("[DEBUG] About to save " + kandidaterToSave.size() + " kandidater...");
             kandidatRepository.saveAll(kandidaterToSave);
-            System.out.println("Lagret " + kandidaterToSave.size() + " kandidater med nye lenker.");
         }
-        
-        System.out.println("[DEBUG] processAndSaveKandidater completed successfully!");
     }
 
     /**
      * Felles metode for å prosessere og lagre personer fra PersonArticleIndex.
-     * Unngår duplisert kode mellom de forskjellige scraping-metodene.
-     *
-     * @param personArticleIndex indeksen med personer og deres artikler
      */
     private void processAndSavePersons(PersonArticleIndex personArticleIndex) {
         Set<String> allPersonNames = personArticleIndex.getIndex().keySet();
@@ -158,7 +119,7 @@ public final class ScraperStart {
             for (String articleUrl : articleUrlsForPerson) {
                 if (!existingLinks.contains(articleUrl)) {
                     PersonLink personLink = PersonLink.createWithDetectedNettsted(articleUrl, person);
-                    person.addLink(personLink);  // Använder den nya metoden för korrekt synkronisering
+                    person.addLink(personLink);
                     hasNewLinks = true;
                 }
             }
@@ -172,4 +133,3 @@ public final class ScraperStart {
         }
     }
 }
-

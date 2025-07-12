@@ -5,8 +5,8 @@ import java.util.Optional;
 import lombok.Getter;
 
 /**
- * Enum som representerar olika nyhetssidor med deras URL-patterns och RSS-feeds.
- * Innehåller metoder för att identifiera vilken nyhetssida en URL tillhör.
+ * Enum som representerer forskjellige nyhetssider med deres URL-mønstre og RSS-feeder.
+ * Inneholder metoder for å identifisere hvilken nyhetsside en URL tilhører.
  */
 @Getter
 public enum Nettsted {
@@ -22,11 +22,11 @@ public enum Nettsted {
     private final String domain;
 
     /**
-     * Konstruktor för Nettsted enum.
+     * Konstruktør for Nettsted enum.
      *
-     * @param displayName Visningsnamn för nyhetssidan
-     * @param rssUrl RSS-feed URL för nyhetssidan
-     * @param domain Domän för nyhetssidan (används för URL-igenkänning)
+     * @param displayName Visningsnavn for nyhetssiden
+     * @param rssUrl RSS-feed URL for nyhetssiden
+     * @param domain Domene for nyhetssiden (brukes for URL-gjenkjennelse)
      */
     Nettsted(String displayName, String rssUrl, String domain) {
         this.displayName = displayName;
@@ -35,29 +35,29 @@ public enum Nettsted {
     }
 
     /**
-     * Parsar en artikel-URL och identifierar vilken nyhetssida den tillhör.
+     * Parser en artikkel-URL og identifiserer hvilken nyhetsside den tilhører.
      * 
-     * @param url URL:en som ska analyseras
-     * @return Optional med Nettsted om en matchning hittas, annars Optional.empty()
+     * @param url URL-en som skal analyseres
+     * @return Optional med Nettsted hvis en match finnes, ellers Optional.empty()
      */
     public static Optional<Nettsted> parseFromUrl(String url) {
         if (url == null || url.trim().isEmpty()) {
             return Optional.empty();
         }
 
-        // Konvertera till lowercase för case-insensitive jämförelse
+        // Konverter til lowercase for case-insensitive sammenligning
         String lowerUrl = url.toLowerCase();
 
-        // Leta efter domän-matchning i URL:en
+        // Søk etter domene-match i URL-en
         return Arrays.stream(Nettsted.values())
                 .filter(nettsted -> lowerUrl.contains(nettsted.domain.toLowerCase()))
                 .findFirst();
     }
 
     /**
-     * Returnerar en array med alla tillgängliga RSS-URLs.
+     * Returnerer en array med alle tilgjengelige RSS-URLer.
      *
-     * @return Array med RSS-URLs
+     * @return Array med RSS-URLer
      */
     public static String[] getAllRssUrls() {
         return Arrays.stream(Nettsted.values())
@@ -66,9 +66,9 @@ public enum Nettsted {
     }
 
     /**
-     * Returnerar en array med alla tillgängliga visningsnamn.
+     * Returnerer en array med alle tilgjengelige visningsnavn.
      *
-     * @return Array med visningsnamn
+     * @return Array med visningsnavn
      */
     public static String[] getAllDisplayNames() {
         return Arrays.stream(Nettsted.values())
@@ -77,10 +77,10 @@ public enum Nettsted {
     }
 
     /**
-     * Hittar Nettsted baserat på visningsnamn.
+     * Finner Nettsted basert på visningsnavn.
      *
-     * @param displayName Visningsnamnet att leta efter
-     * @return Optional med Nettsted om en matchning hittas, annars Optional.empty()
+     * @param displayName Visningsnavnet som skal søkes etter
+     * @return Optional med Nettsted hvis en match finnes, ellers Optional.empty()
      */
     public static Optional<Nettsted> findByDisplayName(String displayName) {
         if (displayName == null || displayName.trim().isEmpty()) {
@@ -93,10 +93,10 @@ public enum Nettsted {
     }
 
     /**
-     * Kontrollerar om en URL tillhör någon av de kända nyhetssidorna.
+     * Kontrollerer om en URL tilhører noen av de kjente nyhetssidene.
      *
-     * @param url URL:en som ska kontrolleras
-     * @return true om URL:en tillhör en känd nyhetssida, annars false
+     * @param url URL-en som skal kontrolleres
+     * @return true hvis URL-en tilhører en kjent nyhetsside, ellers false
      */
     public static boolean isKnownNewsSource(String url) {
         return parseFromUrl(url).isPresent();
