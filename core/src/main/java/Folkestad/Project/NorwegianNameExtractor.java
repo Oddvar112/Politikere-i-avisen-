@@ -14,13 +14,20 @@ public class NorwegianNameExtractor {
     private static final Pattern NAME_REGEX = Pattern.compile(
         "[A-ZÆØÅ][a-zæøå]+(?:[ \\-][A-ZÆØÅ][a-zæøå]+){1,2}"
     );
-    private final CoreNLPProcessor nlpProcessor;
+    private CoreNLPProcessor nlpProcessor;
 
     /**
-     * Konstruktør som oppretter NorwegianNameExtractor med CoreNLP processor.
+     * Konstruktør som oppretter NorwegianNameExtractor uten å initialisere CoreNLP med en gang.
+     * CoreNLP blir initialisert lazy når det trengs.
      */
     public NorwegianNameExtractor() {
-        this.nlpProcessor = new CoreNLPProcessor();
+    }
+
+    private CoreNLPProcessor getNlpProcessor() {
+        if (nlpProcessor == null) {
+            nlpProcessor = new CoreNLPProcessor();
+        }
+        return nlpProcessor;
     }
 
     /**
@@ -35,7 +42,7 @@ public class NorwegianNameExtractor {
         Set<String> finalNames = new HashSet<>();
 
         for (String candidate : regexNames) {
-            List<String> nlpNames = nlpProcessor.extractPersonNames(candidate);
+            List<String> nlpNames = getNlpProcessor().extractPersonNames(candidate);
             finalNames.addAll(nlpNames);
         }
         return finalNames;
@@ -47,7 +54,7 @@ public class NorwegianNameExtractor {
      * @param text teksten som skal analyseres
      * @return liste med navn funnet av regex
      */
-    private List<String> extractNamesWithRegex(final String text) {
+    public List<String> extractNamesWithRegex(final String text) {
         List<String> names = new ArrayList<>();
         Matcher matcher = NAME_REGEX.matcher(text);
         while (matcher.find()) {
