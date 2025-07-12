@@ -46,4 +46,13 @@ public class PersonArticleIndex {
     public Set<String> getArticlesForPerson(final String person) {
         return index.getOrDefault(person, Collections.emptySet());
     }
+
+    /**
+     * Henter alle personer som er registrert i indeksen.
+     *
+     * @return sett med alle personnavn
+     */
+    public Set<String> getAllPersons() {
+        return index.keySet();
+    }
 }
