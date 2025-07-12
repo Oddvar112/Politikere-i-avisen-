@@ -6,8 +6,17 @@ CREATE TABLE IF NOT EXISTS person (
 CREATE TABLE IF NOT EXISTS person_link (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     link VARCHAR(255) NOT NULL,
+    nettsted VARCHAR(50),
     person_id BIGINT NOT NULL,
     FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS kandidat_link (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    link VARCHAR(255) NOT NULL,
+    nettsted VARCHAR(50),
+    kandidat_id BIGINT NOT NULL,
+    FOREIGN KEY (kandidat_id) REFERENCES kandidat_stortingsvalg(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS kandidat_stortingsvalg (
