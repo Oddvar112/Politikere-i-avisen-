@@ -21,7 +21,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "links") // Avoid circular reference in toString
+@ToString(exclude = "links") 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Person {
 
@@ -34,4 +34,18 @@ public class Person {
 
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PersonLink> links = new HashSet<>();
+
+    public void addLink(PersonLink personLink) {
+        if (personLink != null) {
+            this.links.add(personLink);
+            personLink.setPerson(this);
+        }
+    }
+
+    public void removeLink(PersonLink personLink) {
+        if (personLink != null) {
+            this.links.remove(personLink);
+            personLink.setPerson(null);
+        }
+    }
 }
