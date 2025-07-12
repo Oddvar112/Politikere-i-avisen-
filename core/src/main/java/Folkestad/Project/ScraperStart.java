@@ -35,7 +35,7 @@ public final class ScraperStart {
      * Ekstraherer personnavn fra artikler og lagrer dem med tilhørende artikkellenker.
      */
     public void startScrapingAllNames() {
-        String url = Nettsted.NRK.getRssUrl();
+        String url = Nettsted.NRK.getSourceUrl();
         NRKScraper scraper = new NRKScraper(url);
         NorwegianNameExtractor extractor = new NorwegianNameExtractor();
         PersonArticleIndex personArticleIndex = scraper.buildPersonArticleIndexEfficient(extractor);
@@ -45,12 +45,38 @@ public final class ScraperStart {
     /**
      * Starter skrapingprosessen for kandidatnavn ved hjelp av navnbaserte primærnøkler.
      * Mye enklere nå som hvert navn er unikt i databasen.
+     * Scraper både NRK og VG for å få bredere dekning.
      */
     public void startScrapingKandidatNames() {
-        String url = Nettsted.NRK.getRssUrl();
-        NRKScraper scraper = new NRKScraper(url);
-        PersonArticleIndex personArticleIndex = scraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
-        processAndSaveKandidater(personArticleIndex);
+        PersonArticleIndex combinedIndex = new PersonArticleIndex();
+        
+        // Scrape NRK
+        String nrkUrl = Nettsted.NRK.getSourceUrl();
+        NRKScraper nrkScraper = new NRKScraper(nrkUrl);
+        PersonArticleIndex nrkIndex = nrkScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
+        
+        // Legg til NRK data i kombinert indeks
+        for (String person : nrkIndex.getAllPersons()) {
+            Set<String> articles = nrkIndex.getArticlesForPerson(person);
+            for (String article : articles) {
+                combinedIndex.addMention(person, article);
+            }
+        }
+        
+        // Scrape VG
+        String vgUrl = Nettsted.VG.getSourceUrl();
+        VGScraper vgScraper = new VGScraper(vgUrl);
+        PersonArticleIndex vgIndex = vgScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
+        
+        // Legg til VG data i kombinert indeks
+        for (String person : vgIndex.getAllPersons()) {
+            Set<String> articles = vgIndex.getArticlesForPerson(person);
+            for (String article : articles) {
+                combinedIndex.addMention(person, article);
+            }
+        }
+        
+        processAndSaveKandidater(combinedIndex);
     }
 
     /**
