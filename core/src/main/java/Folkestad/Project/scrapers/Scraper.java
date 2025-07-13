@@ -1,10 +1,13 @@
-package folkestad.project;
+package folkestad.project.scrapers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.Predicate;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import folkestad.project.PersonArticleIndex;
+import folkestad.project.extractors.NorwegianNameExtractor;
 /**
  * Base class for web scrapers using Jsoup.
  * <p>

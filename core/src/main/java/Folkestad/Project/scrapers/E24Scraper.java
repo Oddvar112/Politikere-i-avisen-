@@ -1,4 +1,4 @@
-package folkestad.project;
+package folkestad.project.scrapers;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -6,44 +6,58 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import folkestad.project.PersonArticleIndex;
+import folkestad.project.extractors.NorwegianNameExtractor;
+import folkestad.project.predicates.IsE24ArticlePredicate;
+
 /**
- * VGScraper is a specialized Scraper for extracting articles from VG frontpage.
+ * E24Scraper is a specialized Scraper for extracting articles from E24 frontpage.
  * <p>
  * It efficiently processes articles and extracts person names with their associated article links.
  * </p>
  */
-public class VGScraper extends Scraper {
+public class E24Scraper extends Scraper {
 
-    private final IsVgArticlePredicate articlePredicate = new IsVgArticlePredicate();
+    private final IsE24ArticlePredicate articlePredicate = new IsE24ArticlePredicate();
 
     /**
-     * Constructs a new VGScraper for the given URL.
+     * Constructs a new E24Scraper for the given URL.
      * @param url the URL to scrape
      */
-    public VGScraper(final String url) {
+    public E24Scraper(final String url) {
         super(url);
     }
 
     /**
-     * Extracts all article links from VG frontpage by scraping article elements under main.
+     * Extracts all article links from E24 frontpage by scraping link elements under main.
+     * Based on actual DOM structure: main → link elements directly
      * @param doc the frontpage document
      * @return list of article links
      */
     @Override
     protected ArrayList<String> getLinks(final Document doc) {
-        Elements articles = doc.select("main article");
+        Elements links = doc.select("main > link[url]");
         ArrayList<String> articleLinks = new ArrayList<>();
         
-        for (Element article : articles) {
-            Elements links = article.select("a[href]");
+        for (Element link : links) {
+            String url = link.attr("url");
             
-            for (Element link : links) {
-                String href = link.attr("href");
-                String absoluteUrl = link.attr("abs:href");
-                
-                if (href != null && !href.trim().isEmpty() && !href.startsWith("#")) {
-                    articleLinks.add(absoluteUrl);
+            if (url != null && !url.trim().isEmpty()) {
+                if (!url.startsWith("http")) {
+                    url = "https://e24.no" + (url.startsWith("/") ? url : "/" + url);
                 }
+                articleLinks.add(url);
+            }
+        }
+        
+        Elements traditionalLinks = doc.select("main a[href]");
+        
+        for (Element link : traditionalLinks) {
+            String href = link.attr("href");
+            String absoluteUrl = link.attr("abs:href");
+            
+            if (href != null && !href.trim().isEmpty() && !href.startsWith("#")) {
+                articleLinks.add(absoluteUrl);
             }
         }
         
@@ -53,46 +67,27 @@ public class VGScraper extends Scraper {
     }
 
     /**
-     * Extracts the full text from a VG article by focusing on main content area.
+     * Extracts the full text from an E24 article by focusing on main content area.
+     * Based on DOM structure: main → heading + paragraph elements
      * @param doc the article document
      * @return the concatenated text from main article content
      */
     @Override
     public String getAllText(final Document doc) {
         StringBuilder text = new StringBuilder();
-        
         Elements mainContent = doc.select("main");
         if (mainContent.isEmpty()) {
             return super.getAllText(doc);
         }
-        
-        Elements headlines = mainContent.select("heading, h1, h2");
-        if (!headlines.isEmpty()) {
-            text.append(headlines.text()).append(" ");
+        Elements headings = mainContent.select("heading, h1, h2, h3, h4");
+        if (!headings.isEmpty()) {
+            text.append(headings.text()).append(" ");
         }
-        
         Elements paragraphs = mainContent.select("paragraph, p");
         if (!paragraphs.isEmpty()) {
             text.append(paragraphs.text()).append(" ");
         }
-        
-        Elements otherText = mainContent.select("sectionheader, time");
-        for (Element element : otherText) {
-            String elementText = element.text();
-            if (!elementText.toLowerCase().contains("annonse") && 
-                !elementText.toLowerCase().contains("reklame") &&
-                !elementText.toLowerCase().contains("lytt til") &&
-                elementText.length() > 10) {
-                text.append(elementText).append(" ");
-            }
-        }
-        
         String result = text.toString().trim();
-        
-        if (result.length() < 100) {
-            return super.getAllText(doc);
-        }
-        
         return result;
     }
 

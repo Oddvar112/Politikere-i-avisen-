@@ -1,4 +1,4 @@
-package folkestad.project;
+package folkestad.project.extractors;
 
 import java.util.HashMap;
 import java.util.HashSet;

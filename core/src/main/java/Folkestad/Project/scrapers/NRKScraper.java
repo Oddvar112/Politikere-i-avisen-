@@ -1,9 +1,13 @@
-package folkestad.project;
+package folkestad.project.scrapers;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
+import folkestad.project.PersonArticleIndex;
+import folkestad.project.extractors.NorwegianNameExtractor;
+import folkestad.project.predicates.IsNrkArticlePredicate;
 
 /**
  * NRKScraper is a specialized Scraper for extracting articles from NRK RSS feeds and article pages.

@@ -1,10 +1,13 @@
-package folkestad.project;
+package folkestad.project.extractors;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import folkestad.project.CoreNLPProcessor;
+
 import java.util.regex.Matcher;
 
 /**

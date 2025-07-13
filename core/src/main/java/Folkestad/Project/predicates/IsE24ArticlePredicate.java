@@ -1,4 +1,4 @@
-package folkestad.project;
+package folkestad.project.predicates;
 
 import java.util.function.Predicate;
 import org.jsoup.nodes.Document;
