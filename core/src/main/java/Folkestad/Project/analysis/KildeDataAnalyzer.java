@@ -32,7 +32,7 @@ public class KildeDataAnalyzer {
 
         for (Object[] rad : rawData) {
             String navn = (String) rad[0];
-            String parti = (String) rad[1];
+            String normalizedParti = PartiNameNormalizer.normalizePartiName((String) rad[1]);
             Integer alder = (Integer) rad[2];
             String kjoenn = (String) rad[3];
             String valgdistrikt = (String) rad[4];
@@ -46,10 +46,10 @@ public class KildeDataAnalyzer {
                         .filter(lenke -> kilde.equals("ALT") || lenke.contains(kilde))
                         .collect(Collectors.toList());
 
-                if (!filtretteLenker.isEmpty()) {
+                if (!filtretteLenker.isEmpty()) {                    
                     Person person = new Person();
                     person.setNavn(navn);
-                    person.setParti(parti);
+                    person.setParti(normalizedParti); 
                     person.setAlder(alder);
                     person.setKjoenn(kjoenn);
                     person.setValgdistrikt(valgdistrikt);
@@ -58,7 +58,7 @@ public class KildeDataAnalyzer {
 
                     allePersoner.add(person);
 
-                    partiMentions.merge(parti, filtretteLenker.size(), Integer::sum);
+                    partiMentions.merge(normalizedParti, filtretteLenker.size(), Integer::sum);
 
                     if (alder != null) {
                         aldersListe.add(alder);
@@ -141,22 +141,5 @@ public class KildeDataAnalyzer {
                         Map.Entry::getKey,
                         entry -> (entry.getValue() * 100.0) / totaltAntall));
     }
-
-    /**
-     * Printer parti-fordeling med prosent
-     * 
-     * @param partiMentions Map med parti og antall artikler
-     * @param kilde         Kildenavn for utskrift
-     */
-    public static void printPartiProsentFordeling(Map<String, Integer> partiMentions, String kilde) {
-        Map<String, Double> partiProsent = beregnPartiProsent(partiMentions);
-
-        System.out.println("\n=== PARTI FORDELING FOR " + kilde.toUpperCase() + " ===");
-        partiProsent.entrySet().stream()
-                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
-                .forEach(entry -> System.out.printf("%s: %.1f%% (%d artikler)%n",
-                        entry.getKey(),
-                        entry.getValue(),
-                        partiMentions.get(entry.getKey())));
-    }
 }
+
