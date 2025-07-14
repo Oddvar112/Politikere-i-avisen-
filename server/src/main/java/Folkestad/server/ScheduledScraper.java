@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import folkestad.project.ScraperStart;
+import folkestad.project.analysis.KandidateAnalysis;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,9 @@ public final class ScheduledScraper {
 
     @Autowired
     private ScraperStart scraperStart;
+    
+    @Autowired
+    private KandidateAnalysis kandidateAnalysis;
 
     /**
      * Kjører scraper ved oppstart av applikasjonen.
@@ -27,8 +31,14 @@ public final class ScheduledScraper {
         try {
             LOGGER.info("Initialiserer candidate name extractor...");
             long startTime = System.currentTimeMillis();
+
+
             
             scraperStart.startScrapingKandidatNames();
+            
+            LOGGER.info("Starter caching av analyse data...");
+            kandidateAnalysis.analyzeKandidatData();
+            LOGGER.info("Caching av analyse data fullført");
             
             long endTime = System.currentTimeMillis();
             LOGGER.info("=== Scraper fullført på {} ms ===", (endTime - startTime));
@@ -52,6 +62,11 @@ public final class ScheduledScraper {
         try {
             long startTime = System.currentTimeMillis();
             scraperStart.startScrapingKandidatNames();
+            
+            LOGGER.info("Starter caching av analyse data...");
+            kandidateAnalysis.analyzeKandidatData();
+            LOGGER.info("Caching av analyse data fullført");
+            
             long endTime = System.currentTimeMillis();
             LOGGER.info("=== Planlagt scraper fullført på {} ms ===", (endTime - startTime));
         } catch (Exception e) {

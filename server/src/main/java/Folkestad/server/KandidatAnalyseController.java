@@ -15,16 +15,16 @@ import org.springframework.web.bind.annotation.*;
 public class KandidatAnalyseController {
     
     @Autowired
-    private KandidatAnalyseService kandidatAnalyseHttpService;
+    private KandidatAnalyseService kandidatAnalyseService;
     
     /**
      * Henter analyse data for spesifisert kilde
      * GET /api/analyse/{kilde}
      */
     @GetMapping("/{kilde}")
-    public ResponseEntity<dataDTO> getAnalyseData(@PathVariable String kilde) {
+    public ResponseEntity<dataDTO> getAnalyseData(@PathVariable("kilde") String kilde) {
         try {
-            dataDTO result = kandidatAnalyseHttpService.getAnalyseDataForKilde(kilde);
+            dataDTO result = kandidatAnalyseService.getAnalyseDataForKilde(kilde);
             return ResponseEntity.ok(result);
             
         } catch (IllegalArgumentException e) {
