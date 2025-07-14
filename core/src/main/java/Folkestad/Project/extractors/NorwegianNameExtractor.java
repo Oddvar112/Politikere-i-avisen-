@@ -6,32 +6,34 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import folkestad.project.CoreNLPProcessor;
+// import folkestad.project.CoreNLPProcessor; // COMMENTED OUT - CoreNLP removed
 
 import java.util.regex.Matcher;
 
 /**
- * NorwegianNameExtractor bruker CoreNLPProcessor og norsk regex for å finne og telle forekomster av norske personnavn i en tekst.
+ * NorwegianNameExtractor bruker regex for å finne norske personnavn i en tekst.
+ * CoreNLP functionality has been commented out.
  */
 public class NorwegianNameExtractor {
     private static final Pattern NAME_REGEX = Pattern.compile(
         "[A-ZÆØÅ][a-zæøå]+(?:[ \\-][A-ZÆØÅ][a-zæøå]+){1,2}"
     );
-    private CoreNLPProcessor nlpProcessor;
+    // private CoreNLPProcessor nlpProcessor; // COMMENTED OUT
 
     /**
-     * Konstruktør som oppretter NorwegianNameExtractor uten å initialisere CoreNLP med en gang.
-     * CoreNLP blir initialisert lazy når det trengs.
+     * Konstruktør som oppretter NorwegianNameExtractor.
      */
     public NorwegianNameExtractor() {
     }
 
+    /*
     private CoreNLPProcessor getNlpProcessor() {
         if (nlpProcessor == null) {
             nlpProcessor = new CoreNLPProcessor();
         }
         return nlpProcessor;
     }
+    */
 
     /**
      * Ekstraherer og returnerer alle navn fra en tekst, med all logikk for merging og filtrering.
@@ -45,8 +47,8 @@ public class NorwegianNameExtractor {
         Set<String> finalNames = new HashSet<>();
 
         for (String candidate : regexNames) {
-            List<String> nlpNames = getNlpProcessor().extractPersonNames(candidate);
-            finalNames.addAll(nlpNames);
+            //List<String> nlpNames = getNlpProcessor().extractPersonNames(candidate);
+            //finalNames.addAll(nlpNames);
         }
         return finalNames;
     }

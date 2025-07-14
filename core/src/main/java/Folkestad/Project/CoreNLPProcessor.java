@@ -3,31 +3,37 @@ package folkestad.project;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.CoreDocument;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+// CoreNLP imports commented out
+// import edu.stanford.nlp.ling.CoreAnnotations;
+// import edu.stanford.nlp.ling.CoreLabel;
+// import edu.stanford.nlp.pipeline.CoreDocument;
+// import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 
 /**
  * CoreNLPProcessor håndterer all Stanford CoreNLP-funksjonalitet for navnegjenkjenning.
  * Denne klassen er ansvarlig for å konfigurere og kjøre CoreNLP pipeline samt
  * ekstrahering av person-entiteter fra tekst.
+ * 
+ * NOTE: CoreNLP functionality temporarily disabled - methods return empty/dummy values
  */
 public class CoreNLPProcessor {
     private static final String PIPELINE_COMPONENTS = "tokenize, ssplit, pos, lemma, ner";
-    private StanfordCoreNLP pipeline;
+    // private StanfordCoreNLP pipeline;
 
     public CoreNLPProcessor() {
-        this.pipeline = createPipeline();
+        // this.pipeline = createPipeline();
+        // CoreNLP initialization commented out
     }
 
     /**
      * Ekstraherer kandidatnavn fra en tekst ved hjelp av CoreNLP.
+     * NOTE: Temporarily returns empty list - CoreNLP functionality disabled
      *
      * @param text Teksten som skal analyseres
      * @return Liste med navn funnet av CoreNLP som PERSON-entiteter
      */
     public List<String> extractPersonNames(final String text) {
+        /*
         CoreDocument document = new CoreDocument(text);
         pipeline.annotate(document);
 
@@ -56,18 +62,28 @@ public class CoreNLPProcessor {
         }
 
         return names;
+        */
+        
+        // Return empty list when CoreNLP is disabled
+        return new ArrayList<>();
     }
 
     /**
      * Oppretter og konfigurerer StanfordCoreNLP pipeline.
+     * NOTE: Temporarily disabled - returns null
      *
      * @return Konfigurert StanfordCoreNLP pipeline
      */
-    private StanfordCoreNLP createPipeline() {
+    private Object createPipeline() {
+        /*
         Properties props = new Properties();
         props.setProperty("annotators", PIPELINE_COMPONENTS);
         props.setProperty("coref.algorithm", "neural");
         return new StanfordCoreNLP(props);
+        */
+        
+        // Return null when CoreNLP is disabled
+        return null;
     }
 }
 
