@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @EnableAsync
-public final class ScheduledScraper {
+public class ScheduledScraper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledScraper.class);
     private final AtomicBoolean isShuttingDown = new AtomicBoolean(false);
