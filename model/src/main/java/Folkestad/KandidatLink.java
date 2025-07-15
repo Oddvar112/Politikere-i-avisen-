@@ -8,21 +8,25 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
+import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "kandidat") 
+@ToString(exclude = "kandidat")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class KandidatLink {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +34,9 @@ public class KandidatLink {
     private Long id;
 
     private String link;
+
+    @Column(name = "scraped_at")
+    private LocalDateTime scrapedAt;
 
     @Enumerated(EnumType.STRING)
     private Nettsted nettsted;
@@ -59,6 +66,7 @@ public class KandidatLink {
         KandidatLink kandidatLink = new KandidatLink();
         kandidatLink.setLinkAndDetectNettsted(link);
         kandidatLink.setKandidat(kandidat);
+        kandidatLink.setScrapedAt(LocalDateTime.now());
         return kandidatLink;
     }
 }
