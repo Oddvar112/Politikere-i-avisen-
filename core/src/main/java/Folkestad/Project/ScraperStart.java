@@ -33,10 +33,10 @@ public final class ScraperStart {
 
     @Autowired
     private PersonRepository personRepository;
-    
+
     @Autowired
     private KandidatNameExtractor kandidatNameExtractor;
-    
+
     @Autowired
     private KandidatStortingsvalgRepository kandidatRepository;
     
@@ -184,36 +184,37 @@ public final class ScraperStart {
         try {
             Set<String> allKandidatNames = personArticleIndex.getAllPersons();
             LOGGER.info("Behandler {} kandidatnavn", allKandidatNames.size());
-            
+
             List<KandidatStortingsvalg> existingKandidatList = kandidatRepository.findAllWithLinks();
             LOGGER.info("Hentet {} eksisterende kandidater fra database", existingKandidatList.size());
-            
+
             Map<String, KandidatStortingsvalg> existingKandidatMap = existingKandidatList
                     .stream()
                     .collect(Collectors.toMap(KandidatStortingsvalg::getNavn, kandidat -> kandidat));
-            
+
             List<KandidatStortingsvalg> kandidaterToSave = new ArrayList<>();
             int newLinksCount = 0;
-            
+
             for (String kandidatName : allKandidatNames) {
                 KandidatStortingsvalg kandidat = existingKandidatMap.get(kandidatName);
                 if (kandidat != null) { // Kandidat finnes i databasen
                     Set<String> articleUrlsForKandidat = personArticleIndex.getArticlesForPerson(kandidatName);
-                    
-                    Set<String> existingLinks = kandidat.getLinks().stream()
-                            .map(KandidatLink::getLink)
-                            .collect(Collectors.toSet());
-                    
+
+            Set<String> existingLinksNormalized = kandidat.getLinks().stream()
+                    .map(link -> this.normalizeUrl(link.getLink()))
+                    .collect(Collectors.toSet());
+
                     boolean hasNewLinks = false;
                     for (String articleUrl : articleUrlsForKandidat) {
-                        if (!existingLinks.contains(articleUrl)) {
+                        String normalizedUrl = this.normalizeUrl(articleUrl);
+                        if (!existingLinksNormalized.contains(normalizedUrl)) {
                             KandidatLink kandidatLink = KandidatLink.createWithDetectedNettsted(articleUrl, kandidat);
                             kandidat.addLink(kandidatLink);
                             hasNewLinks = true;
                             newLinksCount++;
                         }
                     }
-                    
+
                     if (hasNewLinks) {
                         kandidaterToSave.add(kandidat);
                     }
@@ -221,9 +222,9 @@ public final class ScraperStart {
                     LOGGER.debug("Kandidat '{}' ikke funnet i database", kandidatName);
                 }
             }
-            
+
             LOGGER.info("Fant {} nye lenker for {} kandidater", newLinksCount, kandidaterToSave.size());
-            
+
             if (!kandidaterToSave.isEmpty()) {
                 LOGGER.info("Lagrer {} oppdaterte kandidater...", kandidaterToSave.size());
                 kandidatRepository.saveAll(kandidaterToSave);
@@ -231,7 +232,7 @@ public final class ScraperStart {
             } else {
                 LOGGER.info("Ingen nye lenker å lagre");
             }
-            
+
         } catch (Exception e) {
             LOGGER.error("Feil under prosessering av kandidater: ", e);
             throw e;
@@ -247,24 +248,26 @@ public final class ScraperStart {
         try {
             Set<String> allPersonNames = personArticleIndex.getIndex().keySet();
             LOGGER.info("Behandler {} personnavn", allPersonNames.size());
-            
+
             List<Person> existingPersons = personRepository.findByNameInWithLinks(new ArrayList<>(allPersonNames));
             Map<String, Person> existingPersonMap = existingPersons.stream()
                     .collect(Collectors.toMap(Person::getName, person -> person));
             List<Person> personsToSave = new ArrayList<>();
-            
+
             for (String personName : allPersonNames) {
                 Person person = existingPersonMap.getOrDefault(personName, new Person());
                 if (person.getName() == null) {
                     person.setName(personName);
                 }
                 Set<String> articleUrlsForPerson = personArticleIndex.getArticlesForPerson(personName);
-                Set<String> existingLinks = person.getLinks().stream()
-                        .map(PersonLink::getLink)
+                // Normaliser eksisterende linker
+                Set<String> existingLinksNormalized = person.getLinks().stream()
+                        .map(link -> this.normalizeUrl(link.getLink()))
                         .collect(Collectors.toSet());
                 boolean hasNewLinks = false;
                 for (String articleUrl : articleUrlsForPerson) {
-                    if (!existingLinks.contains(articleUrl)) {
+                    String normalizedUrl = this.normalizeUrl(articleUrl);
+                    if (!existingLinksNormalized.contains(normalizedUrl)) {
                         PersonLink personLink = PersonLink.createWithDetectedNettsted(articleUrl, person);
                         person.addLink(personLink);
                         hasNewLinks = true;
@@ -274,16 +277,28 @@ public final class ScraperStart {
                     personsToSave.add(person);
                 }
             }
-            
+
             if (!personsToSave.isEmpty()) {
                 LOGGER.info("Lagrer {} personer...", personsToSave.size());
                 personRepository.saveAll(personsToSave);
                 LOGGER.info("Lagring av personer fullført");
             }
-            
+
         } catch (Exception e) {
             LOGGER.error("Feil under prosessering av personer: ", e);
             throw e;
         }
     }
+
+    /**
+     * Fjerner query-parametre fra en URL (alt etter '?').
+     * @param url original URL
+     * @return normalisert URL uten query-parametre
+     */
+    private String normalizeUrl(String url) {
+        if (url == null) return null;
+        int idx = url.indexOf('?');
+        return idx >= 0 ? url.substring(0, idx) : url;
+    }
+
 }
