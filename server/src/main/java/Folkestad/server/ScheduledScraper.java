@@ -77,7 +77,6 @@ public class ScheduledScraper {
 
         return currentScrapingTask;
     }
-
     /**
      * Kjører planlagt scraper med fast intervall.
      */
