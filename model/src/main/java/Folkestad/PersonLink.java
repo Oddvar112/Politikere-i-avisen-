@@ -1,5 +1,6 @@
 package folkestad;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
@@ -29,6 +30,7 @@ public class PersonLink {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @Column(length = 1000) 
     private String link;
 
     @Enumerated(EnumType.STRING)
