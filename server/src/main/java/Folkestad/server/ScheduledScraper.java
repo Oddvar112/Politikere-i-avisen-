@@ -77,11 +77,10 @@ public class ScheduledScraper {
 
         return currentScrapingTask;
     }
-
     /**
      * Kjører planlagt scraper med fast intervall.
      */
-    @Scheduled(fixedRate = 28800000, initialDelay = 300000) // 8 timer, med 5 min initial delay
+    @Scheduled(fixedRate = 10800000, initialDelay = 300000) // 3 timer, med 5 min initial delay
     public void runScheduledScraper() {
         if (isShuttingDown.get()) {
             LOGGER.info("Applikasjonen er under avslutning, hopper over planlagt scraping");

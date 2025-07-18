@@ -33,6 +33,7 @@ public class KandidatLink {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @Column(length = 1000)
     private String link;
 
     @Column(name = "scraped_at")
