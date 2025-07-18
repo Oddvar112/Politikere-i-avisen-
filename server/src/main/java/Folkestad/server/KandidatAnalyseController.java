@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.*;
  * REST Controller for kandidat analyse endpoints
  * Håndterer kun HTTP requests og delegerer til service
  */
+@CrossOrigin(origins = {
+    "http://localhost:3000", 
+    "http://localhost:5173", 
+    "https://kvasirsbrygg.no",
+    "https://api.kvasirsbrygg.no"
+})
 @RestController
 @RequestMapping("/api/analyse")
 public class KandidatAnalyseController {
