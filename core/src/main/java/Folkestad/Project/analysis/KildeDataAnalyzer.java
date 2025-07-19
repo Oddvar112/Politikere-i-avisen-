@@ -41,9 +41,11 @@ public class KildeDataAnalyzer {
             if (lenkerString != null && !lenkerString.isEmpty()) {
                 String[] alleLenker = lenkerString.split(",");
 
+
                 List<String> filtretteLenker = Arrays.stream(alleLenker)
                         .map(String::trim)
                         .filter(lenke -> kilde.equals("ALT") || lenke.contains(kilde))
+                        .map(KildeDataAnalyzer::normalizeUrl)
                         .collect(Collectors.toList());
 
                 if (!filtretteLenker.isEmpty()) {                    
@@ -140,6 +142,17 @@ public class KildeDataAnalyzer {
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> (entry.getValue() * 100.0) / totaltAntall));
+    }
+
+        /**
+     * Fjerner query-parametre fra en URL (alt etter '?').
+     * @param url original URL
+     * @return normalisert URL uten query-parametre
+     */
+    public static String normalizeUrl(String url) {
+        if (url == null) return null;
+        int idx = url.indexOf('?');
+        return idx >= 0 ? url.substring(0, idx) : url;
     }
 }
 
