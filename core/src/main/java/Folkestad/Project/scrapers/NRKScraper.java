@@ -44,17 +44,22 @@ public class NRKScraper extends Scraper {
      * @param doc the article document
      * @return the concatenated text
      */
-    @Override
-    public String getAllText(final Document doc) {
-        StringBuilder result = new StringBuilder();
-        Elements paragraphs = doc.select("paragraph, p");
-        for (Element paragraph : paragraphs) {
-            if (!paragraph.text().trim().isEmpty()) {
-                result.append(paragraph.text().trim()).append("\n");
-            }
+@Override
+public String getAllText(final Document doc) {
+    StringBuilder result = new StringBuilder();
+    
+    // Velg paragraphs og sectionheaders
+    Elements textElements = doc.select("paragraph, p, sectionheader");
+    
+    for (Element element : textElements) {
+        String text = element.text().trim();
+        if (!text.isEmpty()) {
+            result.append(text).append("\n");
         }
-        return result.toString();
     }
+    
+    return result.toString();
+}
 
     /**
      * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én operasjon.

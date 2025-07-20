@@ -65,12 +65,8 @@ public class VGScraper extends Scraper {
     public String getAllText(final Document doc) {
         StringBuilder text = new StringBuilder();
         
-        Elements mainContent = doc.select("main");
-        if (mainContent.isEmpty()) {
-            return super.getAllText(doc);
-        }
-        
-        Elements headlines = mainContent.select("heading, h1, h2");
+        Elements mainContent = doc.select("main");        
+        Elements headlines = mainContent.select("sectionheader, heading, h1");
         if (!headlines.isEmpty()) {
             text.append(headlines.text()).append(" ");
         }
