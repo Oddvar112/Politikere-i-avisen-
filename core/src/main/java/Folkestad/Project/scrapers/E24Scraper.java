@@ -72,25 +72,30 @@ public class E24Scraper extends Scraper {
      * @param doc the article document
      * @return the concatenated text from main article content
      */
-    @Override
-    public String getAllText(final Document doc) {
-        StringBuilder text = new StringBuilder();
-        Elements mainContent = doc.select("main");
-        if (mainContent.isEmpty()) {
-            return super.getAllText(doc);
-        }
-        Elements headings = mainContent.select("heading, h1, h2, h3, h4");
-        if (!headings.isEmpty()) {
-            text.append(headings.text()).append(" ");
-        }
-        Elements paragraphs = mainContent.select("paragraph, p");
-        if (!paragraphs.isEmpty()) {
-            text.append(paragraphs.text()).append(" ");
-        }
-        String result = text.toString();
-        return result;
-    }
 
+
+@Override
+public String getAllText(final Document doc) {
+    StringBuilder text = new StringBuilder();
+    Elements articleContent = doc.select("article");
+    if (articleContent.isEmpty()) {
+        return super.getAllText(doc);
+    }
+    articleContent.select("[role=region]").remove(); 
+    articleContent.select("h2:contains(Kortversjonen)").remove();
+    articleContent.select("[data-test-tag*=teaser]").remove(); 
+    articleContent.select("a[href*='/']").remove(); 
+    articleContent.select(".advertory-e24-netboard-wrapper").remove(); 
+    articleContent.select("[id*=netboard]").remove();
+    articleContent.select("em").remove();
+    Elements paragraphs = articleContent.select("p");    
+    for (Element paragraph : paragraphs) {
+        String textContent = paragraph.text().trim();
+        text.append(textContent).append(" ");
+    }
+    
+    return text.toString().trim();
+}
     /**
      * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én operasjon.
      * Dette unngår å koble seg opp til samme artikkel flere ganger.
