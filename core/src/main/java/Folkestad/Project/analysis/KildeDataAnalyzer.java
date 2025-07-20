@@ -1,9 +1,10 @@
 package folkestad.project.analysis;
 
-import Folkestad.project.dataDTO;
-import Folkestad.project.Person;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import folkestad.project.Person;
+import folkestad.project.dataDTO;
 
 /**
  * Analyserer og filtrerer kandidatdata basert på kilde

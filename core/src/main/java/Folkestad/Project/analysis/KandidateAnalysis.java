@@ -1,7 +1,7 @@
 package folkestad.project.analysis;
 
-import Folkestad.project.dataDTO;
 import folkestad.KandidatLinkRepository;
+import folkestad.project.dataDTO;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 
 package folkestad.server;
 
-import Folkestad.project.dataDTO;
+import folkestad.project.dataDTO;
 import folkestad.project.analysis.KandidateAnalysis;
 
 import org.springframework.beans.factory.annotation.Autowired;

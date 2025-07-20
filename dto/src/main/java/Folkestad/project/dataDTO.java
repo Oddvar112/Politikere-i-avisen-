@@ -1,4 +1,4 @@
-package Folkestad.project;
+package folkestad.project;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
