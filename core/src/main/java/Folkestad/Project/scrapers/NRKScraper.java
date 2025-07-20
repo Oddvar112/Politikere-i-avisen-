@@ -3,6 +3,7 @@ package folkestad.project.scrapers;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import folkestad.project.PersonArticleIndex;
@@ -45,10 +46,14 @@ public class NRKScraper extends Scraper {
      */
     @Override
     public String getAllText(final Document doc) {
-        Elements body = doc.select(".article-body");
-        Elements intro = doc.select("header>div>p");
-        Elements headline = doc.select("header>h1");
-        return headline.text() + " " + intro.text() + " " + body.text();
+        StringBuilder result = new StringBuilder();
+        Elements paragraphs = doc.select("paragraph, p");
+        for (Element paragraph : paragraphs) {
+            if (!paragraph.text().trim().isEmpty()) {
+                result.append(paragraph.text().trim()).append("\n");
+            }
+        }
+        return result.toString();
     }
 
     /**
