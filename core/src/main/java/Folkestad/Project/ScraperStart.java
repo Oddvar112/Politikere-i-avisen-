@@ -16,6 +16,7 @@ import folkestad.project.extractors.NorwegianNameExtractor;
 import folkestad.project.scrapers.E24Scraper;
 import folkestad.project.scrapers.NRKScraper;
 import folkestad.project.scrapers.VGScraper;
+import folkestad.project.scrapers.ScraperFactory;
 import folkestad.PersonLink;
 import folkestad.KandidatStortingsvalg;
 import folkestad.KandidatStortingsvalgRepository;
@@ -25,6 +26,7 @@ import folkestad.Nettsted;
 /**
  * Komponent ansvarlig for skraping av NRK-artikler og utvinning av personnavn.
  * Bruker nå navnbaserte primærnøkler for kandidater, som eliminerer duplikatproblemer.
+ * Oppdatert til å bruke ScraperFactory for riktig dependency injection.
  */
 @Component
 public final class ScraperStart {
@@ -40,6 +42,9 @@ public final class ScraperStart {
     @Autowired
     private KandidatStortingsvalgRepository kandidatRepository;
     
+    @Autowired
+    private ScraperFactory scraperFactory;
+    
     /**
      * Starter skrapingprosessen for NRK-artikler.
      * Ekstraherer personnavn fra artikler og lagrer dem med tilhørende artikkellenker.
@@ -50,7 +55,7 @@ public final class ScraperStart {
             String url = Nettsted.NRK.getSourceUrl();
             LOGGER.info("Kobler til NRK URL: {}", url);
             
-            NRKScraper scraper = new NRKScraper(url);
+            NRKScraper scraper = scraperFactory.createNRKScraper(url);
             NorwegianNameExtractor extractor = new NorwegianNameExtractor();
             
             LOGGER.info("Bygger person-artikkel indeks...");
@@ -73,7 +78,6 @@ public final class ScraperStart {
      */
     public void startScrapingKandidatNames() {
         LOGGER.info("=== Starter scraping av kandidatnavn ===");
-        //to doo flytte ut lik logikk til egen metode
         try {
             // Test database tilkobling først
             LOGGER.info("Tester database tilkobling...");
@@ -93,7 +97,7 @@ public final class ScraperStart {
                 String nrkUrl = Nettsted.NRK.getSourceUrl();
                 LOGGER.info("Kobler til NRK: {}", nrkUrl);
                 
-                NRKScraper nrkScraper = new NRKScraper(nrkUrl);
+                NRKScraper nrkScraper = scraperFactory.createNRKScraper(nrkUrl);
                 LOGGER.info("Bygger NRK indeks...");
                 PersonArticleIndex nrkIndex = nrkScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
                 
@@ -118,7 +122,7 @@ public final class ScraperStart {
                 String vgUrl = Nettsted.VG.getSourceUrl();
                 LOGGER.info("Kobler til VG: {}", vgUrl);
                 
-                VGScraper vgScraper = new VGScraper(vgUrl);
+                VGScraper vgScraper = scraperFactory.createVGScraper(vgUrl);
                 LOGGER.info("Bygger VG indeks...");
                 PersonArticleIndex vgIndex = vgScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
                 
@@ -142,7 +146,7 @@ public final class ScraperStart {
                 String e24Url = Nettsted.E24.getSourceUrl();
                 LOGGER.info("Kobler til E24: {}", e24Url);
                 
-                E24Scraper e24Scraper = new E24Scraper(e24Url);
+                E24Scraper e24Scraper = scraperFactory.createE24Scraper(e24Url);
                 LOGGER.info("Bygger E24 indeks...");
                 PersonArticleIndex e24Index = e24Scraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
                 
@@ -180,7 +184,7 @@ public final class ScraperStart {
      */
     private void processAndSaveKandidater(PersonArticleIndex personArticleIndex) {
         LOGGER.info("=== Prosesserer kandidater ===");
-        
+
         try {
             Set<String> allKandidatNames = personArticleIndex.getAllPersons();
             LOGGER.info("Behandler {} kandidatnavn", allKandidatNames.size());
@@ -200,9 +204,9 @@ public final class ScraperStart {
                 if (kandidat != null) { // Kandidat finnes i databasen
                     Set<String> articleUrlsForKandidat = personArticleIndex.getArticlesForPerson(kandidatName);
 
-            Set<String> existingLinksNormalized = kandidat.getLinks().stream()
-                    .map(link -> this.normalizeUrl(link.getLink()))
-                    .collect(Collectors.toSet());
+                    Set<String> existingLinksNormalized = kandidat.getLinks().stream()
+                            .map(link -> this.normalizeUrl(link.getLink()))
+                            .collect(Collectors.toSet());
 
                     boolean hasNewLinks = false;
                     for (String articleUrl : articleUrlsForKandidat) {
@@ -300,5 +304,4 @@ public final class ScraperStart {
         int idx = url.indexOf('?');
         return idx >= 0 ? url.substring(0, idx) : url;
     }
-
 }
