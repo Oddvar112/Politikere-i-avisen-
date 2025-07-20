@@ -36,3 +36,14 @@ CREATE TABLE IF NOT EXISTS kandidat_stortingsvalg (
     INDEX idx_valgdistrikt (valgdistrikt),
     INDEX idx_partikode (partikode)
 );
+
+CREATE TABLE IF NOT EXISTS innlegg (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    link VARCHAR(1000) NOT NULL UNIQUE,
+    sammendrag TEXT,
+    kompresjon_ratio DOUBLE,
+    antall_ord_original INT,
+    antall_ord_sammendrag INT,
+    INDEX idx_link (link),
+    INDEX idx_kompresjon_ratio (kompresjon_ratio)
+);
