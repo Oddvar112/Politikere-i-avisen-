@@ -54,7 +54,7 @@ public class KandidatAnalyseService {
      * @return SammendragDTO eller null hvis ikke funnet
      */
     public SammendragDTO getSammendragForLink(String link) {
-        return innleggRepository.findByLink(link)
+        return innleggRepository.findByNormalizedUrl(link)
             .map(innlegg -> new SammendragDTO(
                 innlegg.getId(),
                 innlegg.getLink(),
