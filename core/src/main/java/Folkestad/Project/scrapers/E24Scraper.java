@@ -87,7 +87,7 @@ public class E24Scraper extends Scraper {
         if (!paragraphs.isEmpty()) {
             text.append(paragraphs.text()).append(" ");
         }
-        String result = text.toString().trim();
+        String result = text.toString();
         return result;
     }
 

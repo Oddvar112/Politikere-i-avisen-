@@ -91,11 +91,7 @@ public class VGScraper extends Scraper {
             }
         }
         
-        String result = text.toString().trim();
-        
-        if (result.length() < 100) {
-            return super.getAllText(doc);
-        }
+        String result = text.toString();
         
         return result;
     }

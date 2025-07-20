@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import folkestad.project.PersonArticleIndex;
 import folkestad.project.extractors.NorwegianNameExtractor;
@@ -24,7 +23,6 @@ public abstract class Scraper {
     private String tekst;
     private String url;
 
-    @Autowired
     private InnleggRepository innleggRepository;
 
     private final TextSummarizer textSummarizer = new TextSummarizer();
@@ -162,5 +160,9 @@ public abstract class Scraper {
                 });
 
         return index;
+    }
+
+    public void setInnleggRepository(InnleggRepository innleggRepository) {
+        this.innleggRepository = innleggRepository;
     }
 }
