@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import folkestad.project.SammendragDTO;
 import folkestad.project.dataDTO;
 
 /**
@@ -23,7 +24,7 @@ public class KandidatAnalyseController {
     
     @Autowired
     private KandidatAnalyseService kandidatAnalyseService;
-    
+        
     /**
      * Henter analyse data for spesifisert kilde
      * GET /api/analyse/{kilde}
@@ -43,5 +44,18 @@ public class KandidatAnalyseController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Hent sammendrag for en gitt link
+     * GET /api/analyse/sammendrag?link=...
+     */
+    @GetMapping("/sammendrag")
+    public ResponseEntity<SammendragDTO> getSammendragForLink(@RequestParam("link") String link) {
+        SammendragDTO dto = kandidatAnalyseService.getSammendragForLink(link);
+        if (dto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(dto);
     }
 }

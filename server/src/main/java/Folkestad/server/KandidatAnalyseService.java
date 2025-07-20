@@ -1,8 +1,9 @@
-
 package folkestad.server;
 
 import folkestad.project.dataDTO;
 import folkestad.project.analysis.KandidateAnalysis;
+import folkestad.InnleggRepository;
+import folkestad.project.SammendragDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ public class KandidatAnalyseService {
     
     @Autowired
     private KandidateAnalysis kandidateAnalysis;
+    
+    @Autowired
+    private InnleggRepository innleggRepository;
     
     /**
      * Henter analyse data for spesifisert kilde med full validering
@@ -42,5 +46,23 @@ public class KandidatAnalyseService {
             default:
                 throw new IllegalArgumentException("Ukjent kilde: " + kilde);
         }
+    }
+    
+    /**
+     * Hent sammendrag for en gitt link
+     * @param link artikkel-link
+     * @return SammendragDTO eller null hvis ikke funnet
+     */
+    public SammendragDTO getSammendragForLink(String link) {
+        return innleggRepository.findByLink(link)
+            .map(innlegg -> new SammendragDTO(
+                innlegg.getId(),
+                innlegg.getLink(),
+                innlegg.getSammendrag(),
+                innlegg.getKompresjonRatio(),
+                innlegg.getAntallOrdOriginal(),
+                innlegg.getAntallOrdSammendrag()
+            ))
+            .orElse(null);
     }
 }
