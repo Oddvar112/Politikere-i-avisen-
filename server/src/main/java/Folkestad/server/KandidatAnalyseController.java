@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import folkestad.project.SammendragDTO;
 import folkestad.project.dataDTO;
@@ -21,6 +23,8 @@ import folkestad.project.dataDTO;
 @RestController
 @RequestMapping("/api/analyse")
 public class KandidatAnalyseController {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(KandidatAnalyseController.class);
     
     @Autowired
     private KandidatAnalyseService kandidatAnalyseService;
@@ -52,10 +56,24 @@ public class KandidatAnalyseController {
      */
     @GetMapping("/sammendrag")
     public ResponseEntity<SammendragDTO> getSammendragForLink(@RequestParam("link") String link) {
-        SammendragDTO dto = kandidatAnalyseService.getSammendragForLink(link);
-        if (dto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        LOGGER.info("=== SAMMENDRAG REQUEST ===");
+        LOGGER.info("Mottatt link: '{}'", link);
+        LOGGER.info("Link lengde: {}", link != null ? link.length() : "null");
+        
+        try {
+            SammendragDTO dto = kandidatAnalyseService.getSammendragForLink(link);
+            
+            if (dto == null) {
+                LOGGER.warn("Ingen sammendrag funnet for link: '{}'", link);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            
+            LOGGER.info("Sammendrag funnet! ID: {}", dto.getId());
+            return ResponseEntity.ok(dto);
+            
+        } catch (Exception e) {
+            LOGGER.error("Feil ved henting av sammendrag for link '{}': {}", link, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(dto);
     }
 }
