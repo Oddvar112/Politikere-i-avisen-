@@ -43,6 +43,8 @@ public class KandidatAnalyseService {
             case "alt":
             case "all":
                 return kandidateAnalysis.getDataAlt();
+            case "dagbladet":
+                return kandidateAnalysis.getDataDagbladet();
             default:
                 throw new IllegalArgumentException("Ukjent kilde: " + kilde);
         }
