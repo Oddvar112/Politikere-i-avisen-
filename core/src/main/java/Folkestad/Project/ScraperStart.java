@@ -13,6 +13,7 @@ import folkestad.Person;
 import folkestad.PersonRepository;
 import folkestad.project.extractors.KandidatNameExtractor;
 import folkestad.project.extractors.NorwegianNameExtractor;
+import folkestad.project.scrapers.DagbladetScraper;
 import folkestad.project.scrapers.E24Scraper;
 import folkestad.project.scrapers.NRKScraper;
 import folkestad.project.scrapers.VGScraper;
@@ -131,7 +132,8 @@ public final class ScraperStart {
                 for (String person : vgIndex.getAllPersons()) {
                     Set<String> articles = vgIndex.getArticlesForPerson(person);
                     for (String article : articles) {
-                        combinedIndex.addMention(person, article);
+                        String normalizedArticle = this.normalizeUrl(article);
+                        combinedIndex.addMention(person, normalizedArticle);
                     }
                 }
                 LOGGER.info("VG scraping fullført");
@@ -162,6 +164,26 @@ public final class ScraperStart {
             } catch (Exception e) {
                 LOGGER.error("Feil under E24 scraping: ", e);
                 // Fortsett med lagring selv om E24 feiler
+            }
+            
+            // Scrape Dagbladet
+            LOGGER.info("Starter Dagbladet scraping...");
+            try {
+                String dagbladetUrl = Nettsted.DAGBLADET.getSourceUrl();
+                LOGGER.info("Kobler til Dagbladet: {}", dagbladetUrl);
+                DagbladetScraper dagbladetScraper = scraperFactory.createDagbladetScraper(dagbladetUrl);
+                LOGGER.info("Bygger Dagbladet indeks...");
+                PersonArticleIndex dagbladetIndex = dagbladetScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
+                LOGGER.info("Fant {} personer i Dagbladet artikler", dagbladetIndex.getAllPersons().size());
+                for (String person : dagbladetIndex.getAllPersons()) {
+                    Set<String> articles = dagbladetIndex.getArticlesForPerson(person);
+                    for (String article : articles) {
+                        combinedIndex.addMention(person, article);
+                    }
+                }
+                LOGGER.info("Dagbladet scraping fullført");
+            } catch (Exception e) {
+                LOGGER.error("Feil under Dagbladet scraping: ", e);
             }
             
             LOGGER.info("Totalt fant vi {} unike personer", combinedIndex.getAllPersons().size());
@@ -272,7 +294,7 @@ public final class ScraperStart {
                 for (String articleUrl : articleUrlsForPerson) {
                     String normalizedUrl = this.normalizeUrl(articleUrl);
                     if (!existingLinksNormalized.contains(normalizedUrl)) {
-                        PersonLink personLink = PersonLink.createWithDetectedNettsted(articleUrl, person);
+                        PersonLink personLink = PersonLink.createWithDetectedNettsted(normalizedUrl, person);
                         person.addLink(personLink);
                         hasNewLinks = true;
                     }
