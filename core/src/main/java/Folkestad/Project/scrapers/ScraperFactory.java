@@ -29,4 +29,10 @@ public class ScraperFactory {
         scraper.setInnleggRepository(innleggRepository);
         return scraper;
     }
+
+    public DagbladetScraper createDagbladetScraper(String url) {
+        DagbladetScraper scraper = new DagbladetScraper(url);
+        scraper.setInnleggRepository(innleggRepository);
+        return scraper;
+    }
 }
