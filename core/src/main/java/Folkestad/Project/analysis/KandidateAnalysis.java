@@ -23,6 +23,7 @@ public class KandidateAnalysis {
     private dataDTO dataNRK;
     private dataDTO dataE24;
     private dataDTO dataAlt;
+    private dataDTO dataDagbladet;
     
     private LocalDateTime sistOppdatert;
     
@@ -37,6 +38,7 @@ public class KandidateAnalysis {
         dataNRK = KildeDataAnalyzer.analyzeDataByKilde(rawData, "nrk.no");
         dataE24 = KildeDataAnalyzer.analyzeDataByKilde(rawData, "e24.no");
         dataAlt = KildeDataAnalyzer.analyzeDataByKilde(rawData, "ALT");
+        dataDagbladet = KildeDataAnalyzer.analyzeDataByKilde(rawData, "dagbladet.no");
         
         sistOppdatert = LocalDateTime.now();
     }
@@ -54,5 +56,9 @@ public class KandidateAnalysis {
      */
     public boolean erDataTilgjengelig() {
         return dataAlt != null;
+    }
+
+    public dataDTO getDataDagbladet() {
+        return dataDagbladet;
     }
 }
