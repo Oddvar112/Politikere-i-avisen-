@@ -1,0 +1,109 @@
+package folkestad.project.scrapers;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import folkestad.project.PersonArticleIndex;
+import folkestad.project.extractors.NorwegianNameExtractor;
+import folkestad.project.predicates.IsDagbladetArticlePredicate;
+
+/**
+ * DagbladetScraper is a specialized Scraper for extracting articles from Dagbladet RSS feeds.
+ * <p>
+ * It efficiently processes articles and extracts person names with their associated article links.
+ * </p>
+ */
+public class DagbladetScraper extends Scraper {
+
+    private final IsDagbladetArticlePredicate articlePredicate = new IsDagbladetArticlePredicate();
+
+    /**
+     * Constructs a new DagbladetScraper for the given URL.
+     * @param url the URL to scrape
+     */
+    public DagbladetScraper(final String url) {
+        super(url);
+    }
+
+    /**
+     * Extracts all article links from Dagbladet frontpage by getting url attribute from articles.
+     * Simple approach: each article element has a url attribute with the full URL.
+     * @param doc the frontpage document
+     * @return list of article links
+     */
+  @Override
+    protected ArrayList<String> getLinks(final Document doc) {
+        ArrayList<String> articleLinks = new ArrayList<>();
+        
+        Elements articles = doc.select("main article");
+        System.out.println("Fant " + articles.size() + " article elementer under main");
+        
+        for (Element article : articles) {
+            Element link = article.selectFirst("a[href]");
+            
+            if (link != null) {
+                String url = link.attr("href");
+                System.out.println("Fant URL: " + url);
+                
+                if (url != null && !url.trim().isEmpty()) {
+                    articleLinks.add(url);
+                }
+            }
+        }
+        
+        System.out.println("Totalt " + articleLinks.size() + " URL-er lagt til");
+        
+        return articleLinks.stream()
+                .distinct()
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /**
+     * Extracts the full text (headline, intro, and body) from a Dagbladet article document.
+     * @param doc the article document
+     * @return the concatenated text
+     */
+    @Override
+    public String getAllText(final Document doc) {
+        StringBuilder result = new StringBuilder();
+        
+        Element articleContent = doc.selectFirst("article");
+        if (articleContent != null) {
+
+            articleContent.select(".ad, .advertisement, .promo, nav, header, footer").remove();
+            articleContent.select("[class*=ad], [class*=reklame], [class*=annonse]").remove();
+        
+
+
+            Elements paragraphs = articleContent.select("p");
+            for (Element paragraph : paragraphs) {
+                String text = paragraph.text().trim();
+                if (!text.isEmpty() && !text.toLowerCase().contains("annonse") && 
+                    !text.toLowerCase().contains("reklame") && text.length() > 20) {
+                    result.append(text).append(" ");
+                }
+            }
+        }
+        
+        String fullText = result.toString().trim();
+        String marker = "Har du tips til oss?";
+        int idx = fullText.indexOf(marker);
+        if (idx >= 0) {
+            fullText = fullText.substring(0, idx).trim(); 
+        }
+        return fullText;
+    }
+
+    /**
+     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én operasjon.
+     * Dette unngår å koble seg opp til samme artikkel flere ganger.
+     * @param extractor NorwegianNameExtractor-instans
+     * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
+     */
+    public PersonArticleIndex buildPersonArticleIndexEfficient(final NorwegianNameExtractor extractor) {
+        return super.buildPersonArticleIndexEfficient(extractor, articlePredicate);
+    }
+}
