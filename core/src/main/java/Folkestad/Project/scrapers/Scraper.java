@@ -143,8 +143,12 @@ public abstract class Scraper {
         PersonArticleIndex index = new PersonArticleIndex();
 
         ArrayList<String> allLinks = getLinks(connectToSite(getUrl()));
+        ArrayList<String> normalizedLinks = new ArrayList<>();
+        for (String link : allLinks) {
+            normalizedLinks.add(normalizeUrl(link));
+        }
 
-        allLinks.parallelStream()
+        normalizedLinks.parallelStream()
                 .map(this::connectToSite)
                 .filter(articlePredicate)
                 .forEach(doc -> {
@@ -164,5 +168,18 @@ public abstract class Scraper {
 
     public void setInnleggRepository(InnleggRepository innleggRepository) {
         this.innleggRepository = innleggRepository;
+    }
+
+    protected String normalizeUrl(String url) {
+        if (url == null) return null;
+        int idxQ = url.indexOf('?');
+        String base = idxQ >= 0 ? url.substring(0, idxQ) : url;
+        if (base.contains("dagbladet.no") || base.contains("vg.no")) {
+            int lastSlash = base.lastIndexOf('/');
+            if (lastSlash > 0) {
+                base = base.substring(0, lastSlash);
+            }
+        }
+        return base;
     }
 }
