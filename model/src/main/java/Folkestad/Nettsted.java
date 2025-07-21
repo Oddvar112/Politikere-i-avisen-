@@ -16,7 +16,7 @@ public enum Nettsted {
     VG("VG", "https://www.vg.no/", "vg.no", ScrapingMethod.FRONTPAGE_DOM),
     E24("E24", "https://e24.no/", "e24.no", ScrapingMethod.FRONTPAGE_DOM),
     AFTENPOSTEN("Aftenposten", "https://www.aftenposten.no/rss", "aftenposten.no", ScrapingMethod.RSS),
-    DAGBLADET("Dagbladet", "https://www.dagbladet.no/rss", "dagbladet.no", ScrapingMethod.RSS);
+    DAGBLADET("Dagbladet", "https://www.dagbladet.no/", "dagbladet.no", ScrapingMethod.FRONTPAGE_DOM);
 
     /**
      * Enum for å beskrive hvordan nettsiden scrapers.
