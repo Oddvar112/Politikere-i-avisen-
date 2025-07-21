@@ -152,8 +152,16 @@ public class KildeDataAnalyzer {
      */
     public static String normalizeUrl(String url) {
         if (url == null) return null;
-        int idx = url.indexOf('?');
-        return idx >= 0 ? url.substring(0, idx) : url;
+        int idxQ = url.indexOf('?');
+        String base = idxQ >= 0 ? url.substring(0, idxQ) : url;
+        // Fjern alt etter siste slash for Dagbladet og VG
+        if (base.contains("dagbladet.no") || base.contains("vg.no")) {
+            int lastSlash = base.lastIndexOf('/');
+            if (lastSlash > 0) {
+                base = base.substring(0, lastSlash);
+            }
+        }
+        return base;
     }
 }
 

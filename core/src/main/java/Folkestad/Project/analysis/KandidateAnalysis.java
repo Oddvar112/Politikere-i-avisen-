@@ -57,8 +57,4 @@ public class KandidateAnalysis {
     public boolean erDataTilgjengelig() {
         return dataAlt != null;
     }
-
-    public dataDTO getDataDagbladet() {
-        return dataDagbladet;
-    }
 }
