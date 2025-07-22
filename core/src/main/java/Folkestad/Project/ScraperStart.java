@@ -22,6 +22,7 @@ import folkestad.PersonLink;
 import folkestad.KandidatStortingsvalg;
 import folkestad.KandidatStortingsvalgRepository;
 import folkestad.KandidatLink;
+import folkestad.KandidatLinkRepository;
 import folkestad.Nettsted;
 
 /**
@@ -41,8 +42,10 @@ public final class ScraperStart {
     private KandidatNameExtractor kandidatNameExtractor;
 
     @Autowired
+    private KandidatLinkRepository kandidatLinkRepository;
+
+    @Autowired
     private KandidatStortingsvalgRepository kandidatRepository;
-    
     @Autowired
     private ScraperFactory scraperFactory;
     
@@ -217,44 +220,44 @@ public final class ScraperStart {
                     .stream()
                     .collect(Collectors.toMap(KandidatStortingsvalg::getNavn, kandidat -> kandidat));
 
-            List<KandidatStortingsvalg> kandidaterToSave = new ArrayList<>();
+            List<KandidatLink> kandidatLinksToSave = new ArrayList<>();
             int newLinksCount = 0;
 
             for (String kandidatName : allKandidatNames) {
                 KandidatStortingsvalg kandidat = existingKandidatMap.get(kandidatName);
-                if (kandidat != null) { // Kandidat finnes i databasen
+                if (kandidat != null) { 
                     Set<String> articleUrlsForKandidat = personArticleIndex.getArticlesForPerson(kandidatName);
 
                     Set<String> existingLinks = kandidat.getLinks().stream()
                             .map(link -> link.getLink())
                             .collect(Collectors.toSet());
 
-                    boolean hasNewLinks = false;
+                    List<String> newLinksForKandidat = new ArrayList<>();
                     for (String articleUrl : articleUrlsForKandidat) {
                         if (!existingLinks.contains(articleUrl)) {
                             KandidatLink kandidatLink = KandidatLink.createWithDetectedNettsted(articleUrl, kandidat);
-                            kandidat.addLink(kandidatLink);
-                            hasNewLinks = true;
+                            kandidatLinksToSave.add(kandidatLink);
+                            newLinksForKandidat.add(articleUrl);
                             newLinksCount++;
                         }
                     }
-
-                    if (hasNewLinks) {
-                        kandidaterToSave.add(kandidat);
+                    if (!newLinksForKandidat.isEmpty()) {
+                        LOGGER.info("Kandidat '{}' får {} nye linker: {}", kandidatName, newLinksForKandidat.size(), newLinksForKandidat);
                     }
                 } else {
                     LOGGER.debug("Kandidat '{}' ikke funnet i database", kandidatName);
                 }
             }
 
-            LOGGER.info("Fant {} nye lenker for {} kandidater", newLinksCount, kandidaterToSave.size());
+            LOGGER.info("Fant {} nye kandidatlenker", newLinksCount);
 
-            if (!kandidaterToSave.isEmpty()) {
-                LOGGER.info("Lagrer {} oppdaterte kandidater...", kandidaterToSave.size());
-                kandidatRepository.saveAll(kandidaterToSave);
-                LOGGER.info("Lagring fullført");
+            if (!kandidatLinksToSave.isEmpty()) {
+                LOGGER.info("Lagrer {} nye kandidatlenker...", kandidatLinksToSave.size());
+                // Anta at du har en kandidatLinkRepository
+                kandidatLinkRepository.saveAll(kandidatLinksToSave);
+                LOGGER.info("Lagring av kandidatlenker fullført");
             } else {
-                LOGGER.info("Ingen nye lenker å lagre");
+                LOGGER.info("Ingen nye kandidatlenker å lagre");
             }
 
         } catch (Exception e) {
