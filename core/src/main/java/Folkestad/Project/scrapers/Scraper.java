@@ -2,8 +2,10 @@ package folkestad.project.scrapers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -24,6 +26,9 @@ public abstract class Scraper {
     private String url;
 
     private InnleggRepository innleggRepository;
+
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Scraper.class);
+
 
     private final TextSummarizer textSummarizer = new TextSummarizer();
 
@@ -52,9 +57,11 @@ public abstract class Scraper {
      */
     protected Document connectToSite(final String url) {
         try {
-            return Jsoup.connect(url).get();
+            Document doc = Jsoup.connect(url).get();
+            return doc;
         } catch (IOException e) {
-            throw new RuntimeException("Kunne ikke koble til siden: " + url, e);
+            logger.error("Kunne ikke koble til siden: {}", url);
+            return null;
         }
     }
 
@@ -111,14 +118,12 @@ public abstract class Scraper {
      * @param originalText den fulle artikkelteksten
      */
     protected void processAndSaveSummary(String articleUrl, String originalText) {
+
         if (innleggRepository != null && innleggRepository.existsByLink(articleUrl)) {
             return;
         }
 
         SummaryResult summaryResult = textSummarizer.summarize(originalText);
-        if (summaryResult.getSummaryWordCount() > 10 &&
-                summaryResult.getCompressionRatio() < 0.8) {
-
             Innlegg innlegg = new Innlegg();
             innlegg.setLink(articleUrl);
             innlegg.setSammendragWithStats(summaryResult.getSummary(), originalText);
@@ -126,7 +131,6 @@ public abstract class Scraper {
             if (innleggRepository != null) {
                 innleggRepository.save(innlegg);
             }
-        }
     }
 
     /**
@@ -148,19 +152,20 @@ public abstract class Scraper {
             normalizedLinks.add(normalizeUrl(link));
         }
 
-        normalizedLinks.parallelStream()
+        normalizedLinks.stream()
                 .map(this::connectToSite)
+                .filter(Objects::nonNull)
                 .filter(articlePredicate)
                 .forEach(doc -> {
-                    String articleUrl = doc.location();
+                    String originalUrl = doc.location();
+                    String normalizedUrl = normalizeUrl(originalUrl);
                     String text = getAllText(doc);
 
-                    // Prosesser og lagre sammendrag asynkront
-                    processAndSaveSummary(articleUrl, text);
-
-                    // Fortsett med navnekstrahering som før
                     Set<String> names = extractor.extractNames(text);
-                    index.addMentions(names, articleUrl);
+                    index.addMentions(names, normalizedUrl);
+                    if (names != null && !names.isEmpty()) {
+                        processAndSaveSummary(normalizedUrl, text);
+                    }
                 });
 
         return index;
@@ -171,7 +176,8 @@ public abstract class Scraper {
     }
 
     protected String normalizeUrl(String url) {
-        if (url == null) return null;
+        if (url == null)
+            return null;
         int idxQ = url.indexOf('?');
         String base = idxQ >= 0 ? url.substring(0, idxQ) : url;
         if (base.contains("dagbladet.no") || base.contains("vg.no")) {
