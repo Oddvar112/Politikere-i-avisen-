@@ -63,7 +63,8 @@ public class KandidatAnalyseService {
                 innlegg.getSammendrag(),
                 innlegg.getKompresjonRatio(),
                 innlegg.getAntallOrdOriginal(),
-                innlegg.getAntallOrdSammendrag()
+                innlegg.getAntallOrdSammendrag(),
+                innlegg.getOpprettetDato()
             ))
             .orElse(null);
     }

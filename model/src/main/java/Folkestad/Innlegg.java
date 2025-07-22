@@ -1,5 +1,7 @@
 package folkestad;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,6 +48,11 @@ public class Innlegg {
 
     @Column(name = "antall_ord_sammendrag")
     private Integer antallOrdSammendrag;
+
+    
+    @Column(name = "opprettet_dato")
+    @Builder.Default
+    private LocalDateTime opprettetDato = LocalDateTime.now();
 
     public void calculateCompressionRatio() {
         if (antallOrdOriginal != null && antallOrdSammendrag != null && antallOrdOriginal > 0) {
