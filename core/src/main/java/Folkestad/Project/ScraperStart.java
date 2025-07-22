@@ -59,6 +59,7 @@ public final class ScraperStart {
             String url = Nettsted.NRK.getSourceUrl();
             LOGGER.info("Kobler til NRK URL: {}", url);
             
+            
             NRKScraper scraper = scraperFactory.createNRKScraper(url);
             NorwegianNameExtractor extractor = new NorwegianNameExtractor();
             
