@@ -180,12 +180,6 @@ public abstract class Scraper {
             return null;
         int idxQ = url.indexOf('?');
         String base = idxQ >= 0 ? url.substring(0, idxQ) : url;
-        if (base.contains("dagbladet.no") || base.contains("vg.no")) {
-            int lastSlash = base.lastIndexOf('/');
-            if (lastSlash > 0) {
-                base = base.substring(0, lastSlash);
-            }
-        }
         return base;
     }
 }
