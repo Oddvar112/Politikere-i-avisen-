@@ -46,7 +46,6 @@ public class KildeDataAnalyzer {
                 List<String> filtretteLenker = Arrays.stream(alleLenker)
                         .map(String::trim)
                         .filter(lenke -> kilde.equals("ALT") || lenke.contains(kilde))
-                        .map(KildeDataAnalyzer::normalizeUrl)
                         .collect(Collectors.toList());
 
                 if (!filtretteLenker.isEmpty()) {                    
@@ -145,23 +144,6 @@ public class KildeDataAnalyzer {
                         entry -> (entry.getValue() * 100.0) / totaltAntall));
     }
 
-        /**
-     * Fjerner query-parametre fra en URL (alt etter '?').
-     * @param url original URL
-     * @return normalisert URL uten query-parametre
-     */
-    public static String normalizeUrl(String url) {
-        if (url == null) return null;
-        int idxQ = url.indexOf('?');
-        String base = idxQ >= 0 ? url.substring(0, idxQ) : url;
-        // Fjern alt etter siste slash for Dagbladet og VG
-        if (base.contains("dagbladet.no") || base.contains("vg.no")) {
-            int lastSlash = base.lastIndexOf('/');
-            if (lastSlash > 0) {
-                base = base.substring(0, lastSlash);
-            }
-        }
-        return base;
-    }
+    // normalizeUrl er fjernet, lenker brukes direkte
 }
 

@@ -132,8 +132,7 @@ public final class ScraperStart {
                 for (String person : vgIndex.getAllPersons()) {
                     Set<String> articles = vgIndex.getArticlesForPerson(person);
                     for (String article : articles) {
-                        String normalizedArticle = this.normalizeUrl(article);
-                        combinedIndex.addMention(person, normalizedArticle);
+                        combinedIndex.addMention(person, article);
                     }
                 }
                 LOGGER.info("VG scraping fullført");
@@ -226,14 +225,13 @@ public final class ScraperStart {
                 if (kandidat != null) { // Kandidat finnes i databasen
                     Set<String> articleUrlsForKandidat = personArticleIndex.getArticlesForPerson(kandidatName);
 
-                    Set<String> existingLinksNormalized = kandidat.getLinks().stream()
-                            .map(link -> this.normalizeUrl(link.getLink()))
+                    Set<String> existingLinks = kandidat.getLinks().stream()
+                            .map(link -> link.getLink())
                             .collect(Collectors.toSet());
 
                     boolean hasNewLinks = false;
                     for (String articleUrl : articleUrlsForKandidat) {
-                        String normalizedUrl = this.normalizeUrl(articleUrl);
-                        if (!existingLinksNormalized.contains(normalizedUrl)) {
+                        if (!existingLinks.contains(articleUrl)) {
                             KandidatLink kandidatLink = KandidatLink.createWithDetectedNettsted(articleUrl, kandidat);
                             kandidat.addLink(kandidatLink);
                             hasNewLinks = true;
@@ -287,14 +285,13 @@ public final class ScraperStart {
                 }
                 Set<String> articleUrlsForPerson = personArticleIndex.getArticlesForPerson(personName);
                 // Normaliser eksisterende linker
-                Set<String> existingLinksNormalized = person.getLinks().stream()
-                        .map(link -> this.normalizeUrl(link.getLink()))
+                Set<String> existingLinks = person.getLinks().stream()
+                        .map(link -> link.getLink())
                         .collect(Collectors.toSet());
                 boolean hasNewLinks = false;
                 for (String articleUrl : articleUrlsForPerson) {
-                    String normalizedUrl = this.normalizeUrl(articleUrl);
-                    if (!existingLinksNormalized.contains(normalizedUrl)) {
-                        PersonLink personLink = PersonLink.createWithDetectedNettsted(normalizedUrl, person);
+                    if (!existingLinks.contains(articleUrl)) {
+                        PersonLink personLink = PersonLink.createWithDetectedNettsted(articleUrl, person);
                         person.addLink(personLink);
                         hasNewLinks = true;
                     }
@@ -314,16 +311,5 @@ public final class ScraperStart {
             LOGGER.error("Feil under prosessering av personer: ", e);
             throw e;
         }
-    }
-
-    /**
-     * Fjerner query-parametre fra en URL (alt etter '?').
-     * @param url original URL
-     * @return normalisert URL uten query-parametre
-     */
-    private String normalizeUrl(String url) {
-        if (url == null) return null;
-        int idx = url.indexOf('?');
-        return idx >= 0 ? url.substring(0, idx) : url;
     }
 }
