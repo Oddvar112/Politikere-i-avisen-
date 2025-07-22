@@ -56,9 +56,9 @@ public class KandidatAnalyseService {
      * @return SammendragDTO eller null hvis ikke funnet
      */
     public SammendragDTO getSammendragForLink(String link) {
-        return innleggRepository.findByNormalizedUrl(link)
+        // Først prøv eksakt match
+        return innleggRepository.findByLink(link)
             .map(innlegg -> new SammendragDTO(
-                innlegg.getId(),
                 innlegg.getLink(),
                 innlegg.getSammendrag(),
                 innlegg.getKompresjonRatio(),
@@ -66,6 +66,17 @@ public class KandidatAnalyseService {
                 innlegg.getAntallOrdSammendrag(),
                 innlegg.getOpprettetDato()
             ))
-            .orElse(null);
+            // Hvis ikke eksakt match, prøv normalisert søk
+            .orElse(innleggRepository.findByNormalizedUrl(link)
+                .map(innlegg -> new SammendragDTO(
+                    innlegg.getLink(),
+                    innlegg.getSammendrag(),
+                    innlegg.getKompresjonRatio(),
+                    innlegg.getAntallOrdOriginal(),
+                    innlegg.getAntallOrdSammendrag(),
+                    innlegg.getOpprettetDato()
+                ))
+                .orElse(null)
+            );
     }
 }
