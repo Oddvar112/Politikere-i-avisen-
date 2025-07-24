@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 public class NorwegianNameExtractor {
     private static final Pattern NAME_REGEX = Pattern.compile(
         "[A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+" +
-        "(?:[ \\-][A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+){1,2}"
+        "(?:[ \\-][A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+){1,4}"
     );
     // private CoreNLPProcessor nlpProcessor; // COMMENTED OUT
 
