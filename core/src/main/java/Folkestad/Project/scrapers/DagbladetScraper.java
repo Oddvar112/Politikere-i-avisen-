@@ -24,38 +24,28 @@ public class DagbladetScraper extends Scraper {
      * Constructs a new DagbladetScraper for the given URL.
      * @param url the URL to scrape
      */
-    public DagbladetScraper(final String url) {
-        super(url);
+    public DagbladetScraper(final ArrayList<String> urls) {
+        super(urls);
     }
 
     /**
-     * Extracts all article links from Dagbladet frontpage by getting url attribute from articles.
-     * Simple approach: each article element has a url attribute with the full URL.
-     * @param doc the frontpage document
-     * @return list of article links
+     * Henter artikkellenker fra én side (tidligere getLinks-logikk).
      */
-  @Override
-    protected ArrayList<String> getLinks(final Document doc) {
+    protected ArrayList<String> getlinksFrompage(final Document doc) {
         ArrayList<String> articleLinks = new ArrayList<>();
-        
         Elements articles = doc.select("main article");
         System.out.println("Fant " + articles.size() + " article elementer under main");
-        
         for (Element article : articles) {
             Element link = article.selectFirst("a[href]");
-            
             if (link != null) {
                 String url = link.attr("href");
                 System.out.println("Fant URL: " + url);
-                
                 if (url != null && !url.trim().isEmpty()) {
                     articleLinks.add(url);
                 }
             }
         }
-        
         System.out.println("Totalt " + articleLinks.size() + " URL-er lagt til");
-        
         return articleLinks.stream()
                 .distinct()
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -106,4 +96,5 @@ public class DagbladetScraper extends Scraper {
     public PersonArticleIndex buildPersonArticleIndexEfficient(final NorwegianNameExtractor extractor) {
         return super.buildPersonArticleIndexEfficient(extractor, articlePredicate);
     }
+
 }

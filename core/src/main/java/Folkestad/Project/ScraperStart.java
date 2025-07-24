@@ -56,13 +56,13 @@ public final class ScraperStart {
     public void startScrapingAllNames() {
         LOGGER.info("=== Starter scraping av alle navn ===");
         try {
-            String url = Nettsted.NRK.getSourceUrl();
-            LOGGER.info("Kobler til NRK URL: {}", url);
+            ArrayList<String> urls = Nettsted.NRK.getAllSourceUrls();
+            LOGGER.info("Kobler til NRK URL: {}", urls);
+
             
-            
-            NRKScraper scraper = scraperFactory.createNRKScraper(url);
+            NRKScraper scraper = scraperFactory.createNRKScraper(urls);
             NorwegianNameExtractor extractor = new NorwegianNameExtractor();
-            
+
             LOGGER.info("Bygger person-artikkel indeks...");
             PersonArticleIndex personArticleIndex = scraper.buildPersonArticleIndexEfficient(extractor);
             
@@ -99,10 +99,10 @@ public final class ScraperStart {
             // Scrape NRK
             LOGGER.info("Starter NRK scraping...");
             try {
-                String nrkUrl = Nettsted.NRK.getSourceUrl();
-                LOGGER.info("Kobler til NRK: {}", nrkUrl);
-                
-                NRKScraper nrkScraper = scraperFactory.createNRKScraper(nrkUrl);
+                ArrayList<String> urls = Nettsted.NRK.getAllSourceUrls();
+                LOGGER.info("Kobler til NRK: {}", urls);
+
+                NRKScraper nrkScraper = scraperFactory.createNRKScraper(urls);
                 LOGGER.info("Bygger NRK indeks...");
                 PersonArticleIndex nrkIndex = nrkScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
                 
@@ -124,10 +124,10 @@ public final class ScraperStart {
             // Scrape VG
             LOGGER.info("Starter VG scraping...");
             try {
-                String vgUrl = Nettsted.VG.getSourceUrl();
-                LOGGER.info("Kobler til VG: {}", vgUrl);
-                
-                VGScraper vgScraper = scraperFactory.createVGScraper(vgUrl);
+                ArrayList<String> vgUrls = Nettsted.VG.getAllSourceUrls();
+                LOGGER.info("Kobler til VG: {}", vgUrls);
+
+                VGScraper vgScraper = scraperFactory.createVGScraper(vgUrls);
                 LOGGER.info("Bygger VG indeks...");
                 PersonArticleIndex vgIndex = vgScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
                 
@@ -148,10 +148,10 @@ public final class ScraperStart {
             // Scrape E24
             LOGGER.info("Starter E24 scraping...");
             try {
-                String e24Url = Nettsted.E24.getSourceUrl();
-                LOGGER.info("Kobler til E24: {}", e24Url);
-                
-                E24Scraper e24Scraper = scraperFactory.createE24Scraper(e24Url);
+                ArrayList<String> e24Urls = Nettsted.E24.getAllSourceUrls();
+                LOGGER.info("Kobler til E24: {}", e24Urls);
+
+                E24Scraper e24Scraper = scraperFactory.createE24Scraper(e24Urls);
                 LOGGER.info("Bygger E24 indeks...");
                 PersonArticleIndex e24Index = e24Scraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
                 
