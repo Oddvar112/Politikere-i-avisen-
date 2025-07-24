@@ -31,13 +31,24 @@ public class ScheduledScraper {
     private KandidateAnalysis kandidateAnalysis;
 
     /**
-     * Kjører scraper asynkront ved oppstart.
-     * Dette blokkerer ikke applikasjonens oppstart.
+     * Initialiserer scraping ved applikasjonsstart.
      */
     @PostConstruct
     public void initiateScraping() {
-        LOGGER.info("=== Initierer asynkron scraping ved oppstart ===");
-        // Starter scraping asynkront for å ikke blokkere oppstart
+        LOGGER.info("=== Applikasjon startet raskt - scraping vil starte ved første planlagte kjøring ===");
+    }
+
+    /**
+     * Kjører planlagt scraper med fast intervall.
+     */
+    @Scheduled(fixedRate = 10800000, initialDelay = 60000) // 3 timer, med 1 min initial delay
+    public void runScheduledScraper() {
+        if (isShuttingDown.get()) {
+            LOGGER.info("Applikasjonen er under avslutning, hopper over planlagt scraping");
+            return;
+        }
+        
+        LOGGER.info("=== Starter planlagt scraper ===");
         runScraperAsync();
     }
 
@@ -76,19 +87,6 @@ public class ScheduledScraper {
         });
 
         return currentScrapingTask;
-    }
-    /**
-     * Kjører planlagt scraper med fast intervall.
-     */
-    @Scheduled(fixedRate = 10800000, initialDelay = 300000) // 3 timer, med 5 min initial delay
-    public void runScheduledScraper() {
-        if (isShuttingDown.get()) {
-            LOGGER.info("Applikasjonen er under avslutning, hopper over planlagt scraping");
-            return;
-        }
-        
-        LOGGER.info("=== Starter planlagt scraper ===");
-        runScraperAsync();
     }
 
     /**
