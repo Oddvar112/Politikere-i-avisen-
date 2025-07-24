@@ -61,13 +61,14 @@ public class VGScraper extends Scraper {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+
     @Override
     public String getAllText(final Document doc) {
         StringBuilder text = new StringBuilder();
+        StringBuilder xigzwText = new StringBuilder(); //tags på siden 
 
         Elements mainContent = doc.select("main");
 
-        // Tell alle "Publisert" elementer
         Elements publishedElements = mainContent.select("*:contains(Publisert)");
         int totalPublishedCount = 0;
         for (Element pub : publishedElements) {
@@ -87,7 +88,8 @@ public class VGScraper extends Scraper {
                         "[class*=perspective], " +
                         "[class*=astro-island]");
 
-        // Headlines
+        Elements xigzwElements = mainContent.select("[class*=item][class*=xigzw]");
+
         Elements headlines = mainContent.select("sectionheader, heading, h1");
         if (!headlines.isEmpty()) {
             text.append(headlines.text()).append(" ");
@@ -124,8 +126,20 @@ public class VGScraper extends Scraper {
             }
         }
 
+        for (Element xigzwEl : xigzwElements) {
+            String xigzwElementText = xigzwEl.text().trim();
+            if (!xigzwElementText.isEmpty()) {
+                xigzwText.append(xigzwElementText).append(" ");
+            }
+        }
+
+        if (xigzwText.length() > 0) {
+            text.append(" ").append(xigzwText.toString());
+        }
+
         return text.toString().trim();
     }
+
 
     private boolean isValidText(String text) {
         if (text == null) {
