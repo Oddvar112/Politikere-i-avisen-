@@ -27,8 +27,8 @@ public class NRKScraper extends Scraper {
      * 
      * @param url the URL to scrape
      */
-    public NRKScraper(final String url) {
-        super(url);
+    public NRKScraper(final ArrayList<String> urls) {
+        super(urls);
     }
 
     /**
@@ -38,7 +38,7 @@ public class NRKScraper extends Scraper {
      * @return list of article links
      */
     @Override
-    protected ArrayList<String> getLinks(final Document doc) {
+    protected ArrayList<String> getlinksFrompage(Document doc) {
         Elements links = doc.select("item > link");
         return links.stream().map(link -> link.text()).collect(Collectors.toCollection(ArrayList::new));
     }

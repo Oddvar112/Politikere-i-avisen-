@@ -2,6 +2,7 @@ package folkestad.project.scrapers;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -26,8 +27,8 @@ public class VGScraper extends Scraper {
      * 
      * @param url the URL to scrape
      */
-    public VGScraper(final String url) {
-        super(url);
+    public VGScraper(final ArrayList<String> urls) {
+        super(urls);
     }
 
     /**
@@ -38,7 +39,7 @@ public class VGScraper extends Scraper {
      * @return list of article links
      */
     @Override
-    protected ArrayList<String> getLinks(final Document doc) {
+    protected ArrayList<String> getlinksFrompage(Document doc) {
         Elements articles = doc.select("main article");
         ArrayList<String> articleLinks = new ArrayList<>();
 
