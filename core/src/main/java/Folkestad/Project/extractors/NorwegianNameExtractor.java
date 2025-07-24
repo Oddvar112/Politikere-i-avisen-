@@ -14,9 +14,9 @@ import java.util.regex.Matcher;
  * NorwegianNameExtractor bruker regex for å finne norske personnavn i en tekst.
  * CoreNLP functionality has been commented out.
  */
-public class NorwegianNameExtractor {
     private static final Pattern NAME_REGEX = Pattern.compile(
-        "[A-ZÆØÅ][a-zæøå]+(?:[ \\-][A-ZÆØÅ][a-zæøå]+){1,2}"
+        "[A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+" +
+        "(?:[ \\-][A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+){1,2}"
     );
     // private CoreNLPProcessor nlpProcessor; // COMMENTED OUT
 
