@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,7 +24,7 @@ import folkestad.InnleggRepository;
 public abstract class Scraper {
     private Document doc;
     private String tekst;
-    private String url;
+    ArrayList<String> urls;
 
     private InnleggRepository innleggRepository;
 
@@ -37,14 +38,14 @@ public abstract class Scraper {
      * 
      * @param url the URL to scrape
      */
-    public Scraper(final String url) {
-        this.url = url;
+    public Scraper(final ArrayList<String> urls) {
+        this.urls = urls;
     }
 
     /**
      * Starts the scraping process and collects all text from the main URL.
      */
-    public void startScraping() {
+    public void startScraping(String url) {
         this.tekst = getAllText(connectToSite(url));
     }
 
@@ -98,8 +99,8 @@ public abstract class Scraper {
      * 
      * @return the URL
      */
-    public String getUrl() {
-        return url;
+    public ArrayList<String> getUrl() {
+        return urls;
     }
 
     /**
@@ -109,7 +110,7 @@ public abstract class Scraper {
      * @param doc the source document (RSS feed, frontpage, etc.)
      * @return list of article links
      */
-    protected abstract ArrayList<String> getLinks(Document doc);
+    protected abstract ArrayList<String> getlinksFrompage(Document doc);
 
     /**
      * Prosesserer og lagrer sammendrag av en artikkel.
@@ -146,7 +147,7 @@ public abstract class Scraper {
             final Predicate<Document> articlePredicate) {
         PersonArticleIndex index = new PersonArticleIndex();
 
-        ArrayList<String> allLinks = getLinks(connectToSite(getUrl()));
+        ArrayList<String> allLinks = getLinks(getUrl());
         ArrayList<String> normalizedLinks = new ArrayList<>();
         for (String link : allLinks) {
             normalizedLinks.add(normalizeUrl(link));
@@ -181,5 +182,19 @@ public abstract class Scraper {
         int idxQ = url.indexOf('?');
         String base = idxQ >= 0 ? url.substring(0, idxQ) : url;
         return base;
+    }
+
+
+    protected ArrayList<String> getLinks(final ArrayList<String> urls) {
+        ArrayList<String> allLinks = new ArrayList<>();
+        for (String url : urls) {
+            Document doc = connectToSite(url);
+            if (doc != null) {
+                allLinks.addAll(getlinksFrompage(doc));
+            }
+        }
+        return allLinks.stream()
+                .distinct()
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
