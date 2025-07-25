@@ -170,24 +170,24 @@ public final class ScraperStart {
             }
             
             // Scrape Dagbladet
-            // LOGGER.info("Starter Dagbladet scraping...");
-            // try {
-            //     String dagbladetUrl = Nettsted.DAGBLADET.getSourceUrl();
-            //     LOGGER.info("Kobler til Dagbladet: {}", dagbladetUrl);
-            //     DagbladetScraper dagbladetScraper = scraperFactory.createDagbladetScraper(dagbladetUrl);
-            //     LOGGER.info("Bygger Dagbladet indeks...");
-            //     PersonArticleIndex dagbladetIndex = dagbladetScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
-            //     LOGGER.info("Fant {} personer i Dagbladet artikler", dagbladetIndex.getAllPersons().size());
-            //     for (String person : dagbladetIndex.getAllPersons()) {
-            //         Set<String> articles = dagbladetIndex.getArticlesForPerson(person);
-            //         for (String article : articles) {
-            //             combinedIndex.addMention(person, article);
-            //         }
-            //     }
-            //     LOGGER.info("Dagbladet scraping fullført");
-            // } catch (Exception e) {
-            //     LOGGER.error("Feil under Dagbladet scraping: ", e);
-            // }
+            LOGGER.info("Starter Dagbladet scraping...");
+            try {
+                ArrayList<String> dagbladetUrls = Nettsted.DAGBLADET.getAllSourceUrls();
+                LOGGER.info("Kobler til Dagbladet: {}", dagbladetUrls);
+                DagbladetScraper dagbladetScraper = scraperFactory.createDagbladetScraper(dagbladetUrls);
+                LOGGER.info("Bygger Dagbladet indeks...");
+                PersonArticleIndex dagbladetIndex = dagbladetScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
+                LOGGER.info("Fant {} personer i Dagbladet artikler", dagbladetIndex.getAllPersons().size());
+                for (String person : dagbladetIndex.getAllPersons()) {
+                    Set<String> articles = dagbladetIndex.getArticlesForPerson(person);
+                    for (String article : articles) {
+                        combinedIndex.addMention(person, article);
+                    }
+                }
+                LOGGER.info("Dagbladet scraping fullført");
+            } catch (Exception e) {
+                LOGGER.error("Feil under Dagbladet scraping: ", e);
+            }
             
             LOGGER.info("Totalt fant vi {} unike personer", combinedIndex.getAllPersons().size());
             LOGGER.info("Prosesserer og lagrer kandidater...");

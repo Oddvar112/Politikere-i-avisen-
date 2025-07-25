@@ -60,18 +60,40 @@ public class DagbladetScraper extends Scraper {
     public String getAllText(final Document doc) {
         StringBuilder result = new StringBuilder();
         
+        Element titleElement = doc.selectFirst("meta[property=og:title]");
+        String title = "";
+        if (titleElement != null) {
+            title = titleElement.attr("content").trim();
+            if (!title.isEmpty()) {
+                result.append(title).append(" ");
+            }
+        }
+        
+        // Extract description from og:description meta tag
+        Element descriptionElement = doc.selectFirst("meta[property=og:description]");
+        String description = "";
+        if (descriptionElement != null) {
+            description = descriptionElement.attr("content").trim();
+            if (!description.isEmpty()) {
+                result.append(description).append(" ");
+            }
+        }
+        
+        Element keywordsElement = doc.selectFirst("meta[property=vs:keywords]");
+        String keywords = "";
+        if (keywordsElement != null) {
+            keywords = keywordsElement.attr("content").trim();
+        }
+        
         Element articleContent = doc.selectFirst("article");
         if (articleContent != null) {
-
             articleContent.select(".ad, .advertisement, .promo, nav, header, footer").remove();
             articleContent.select("[class*=ad], [class*=reklame], [class*=annonse]").remove();
-        
-
-
+            
             Elements paragraphs = articleContent.select("p");
             for (Element paragraph : paragraphs) {
                 String text = paragraph.text().trim();
-                if (!text.isEmpty() && !text.toLowerCase().contains("annonse") && 
+                if (!text.isEmpty() && !text.toLowerCase().contains("annonse") &&
                     !text.toLowerCase().contains("reklame") && text.length() > 20) {
                     result.append(text).append(" ");
                 }
@@ -82,11 +104,19 @@ public class DagbladetScraper extends Scraper {
         String marker = "Har du tips til oss?";
         int idx = fullText.indexOf(marker);
         if (idx >= 0) {
-            fullText = fullText.substring(0, idx).trim(); 
+            fullText = fullText.substring(0, idx).trim();
         }
+        
+        if (!keywords.isEmpty()) {
+            if (!fullText.isEmpty()) {
+                fullText += " " + keywords;
+            } else {
+                fullText = keywords;
+            }
+        }
+        
         return fullText;
     }
-
     /**
      * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én operasjon.
      * Dette unngår å koble seg opp til samme artikkel flere ganger.
