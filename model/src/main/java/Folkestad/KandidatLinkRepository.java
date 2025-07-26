@@ -16,7 +16,8 @@ public interface KandidatLinkRepository extends JpaRepository<KandidatLink, Long
                    "ks.alder, " +
                    "ks.kjoenn, " +
                    "GROUP_CONCAT(DISTINCT ks.valgdistrikt ORDER BY ks.valgdistrikt SEPARATOR ',') as alle_valgdistrikt, " +
-                   "GROUP_CONCAT(kl.link ORDER BY kl.link SEPARATOR ',') as alle_lenker " +
+                   "GROUP_CONCAT(kl.link ORDER BY kl.link SEPARATOR ',') as alle_lenker, " +
+                   "GROUP_CONCAT(DATE_FORMAT(kl.scraped_at, '%Y-%m-%d %H:%i:%s') ORDER BY kl.link SEPARATOR ',') as alle_scraped_at " +
                    "FROM kandidat_link kl " +
                    "JOIN kandidat_stortingsvalg ks ON kl.kandidat_navn = ks.navn " +
                    "GROUP BY ks.navn, ks.partinavn, ks.alder, ks.kjoenn " +
