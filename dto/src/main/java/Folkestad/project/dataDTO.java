@@ -3,6 +3,7 @@ package folkestad.project;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -22,6 +23,5 @@ public class dataDTO {
     private Map<String, Integer> partiMentions;
     private Map<String, Double> partiProsentFordeling; 
     private String kilde;
-    
-    
+
 }

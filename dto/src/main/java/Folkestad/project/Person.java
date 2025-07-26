@@ -18,7 +18,7 @@ public class Person {
     private String kjoenn;
     private String parti;
     private String valgdistrikt;
-    private List<String> lenker;
+    private List<ArtikelDTO> lenker;
     private int antallArtikler;
     
 }
