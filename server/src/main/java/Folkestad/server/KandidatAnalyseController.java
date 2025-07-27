@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
     "http://localhost:3000", 
     "http://localhost:5173", 
     "https://kvasirsbrygg.no",
+    "https://www.kvasirsbrygg.no", // <-- legg til denne!
     "https://api.kvasirsbrygg.no"
 })
 @RestController
