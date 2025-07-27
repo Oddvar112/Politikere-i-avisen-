@@ -79,9 +79,14 @@ GET /api/analyse/{kilde}
 - `tilDato` (valgfri): ISO datetime for sluttdato
 
 **Eksempel:**
-```bash
-curl "http://localhost:8080/api/analyse/nrk?fraDato=2025-01-01T00:00:00&tilDato=2025-01-31T23:59:59"
-```
+# Hent NRK analysedata for januar 2025
+curl "https://api.kvasirsbrygg.no/api/analyse/nrk?fraDato=2025-01-01T00:00:00&tilDato=2025-01-31T23:59:59"
+
+# Hent all data fra alle kilder
+curl "https://api.kvasirsbrygg.no/api/analyse/alt"
+
+# Hent VG spesifikk data
+curl "https://api.kvasirsbrygg.no/api/analyse/vg"
 
 **Response:**
 ```json
