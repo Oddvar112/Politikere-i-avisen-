@@ -15,13 +15,7 @@ import java.time.LocalDateTime;
  * REST Controller for kandidat analyse endpoints
  * Håndterer kun HTTP requests og delegerer til service
  */
-@CrossOrigin(origins = {
-    "http://localhost:3000", 
-    "http://localhost:5173", 
-    "https://kvasirsbrygg.no",
-    "https://www.kvasirsbrygg.no", // <-- legg til denne!
-    "https://api.kvasirsbrygg.no"
-})
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/analyse")
 public class KandidatAnalyseController {
