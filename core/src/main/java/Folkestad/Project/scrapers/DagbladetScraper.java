@@ -60,16 +60,8 @@ public class DagbladetScraper extends Scraper {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    /**
-     * Extracts the full text (headline, intro, and body) from a Dagbladet article
-     * document.
-     *
-     * @param doc the article document
-     * @return the concatenated text
-     */
     @Override
     /**
-     * Extracts the full text (headline, intro, and body) from a Dagbladet article document.
      *
      * @param doc the article document
      * @return the concatenated text from the article

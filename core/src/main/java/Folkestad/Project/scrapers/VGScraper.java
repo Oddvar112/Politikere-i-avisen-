@@ -12,10 +12,9 @@ import folkestad.project.extractors.NorwegianNameExtractor;
 import folkestad.project.predicates.IsVgArticlePredicate;
 
 /**
- * VGScraper is a specialized Scraper for extracting articles from VG frontpage.
+ * VGScraper er en spesialisert skraper for å hente artikler fra VG-forsiden.
  * <p>
- * It efficiently processes articles and extracts person names with their
- * associated article links.
+ * Den prosesserer artikler og henter personnavn med tilhørende artikkellenker.
  * </p>
  */
 public class VGScraper extends Scraper {
@@ -23,17 +22,16 @@ public class VGScraper extends Scraper {
     private final IsVgArticlePredicate articlePredicate = new IsVgArticlePredicate();
 
     /**
-     * Oppretter en ny VGScraper for gitte URLer.
+     * Oppretter en ny VGScraper for gitte URL-er.
      *
-     * @param urls Liste med URLer som skal skrapes
+     * @param urls Liste med URL-er som skal skrapes
      */
     public VGScraper(final ArrayList<String> urls) {
         super(urls);
     }
 
     /**
-     * Henter alle artikkellenker fra VG-forsiden ved å skrape artikkelementer under
-     * main.
+     * Henter alle artikkellenker fra VG-forsiden ved å skrape artikkelementer under main.
      *
      * @param doc Forside-dokument
      * @return Liste med artikkellenker
@@ -62,8 +60,7 @@ public class VGScraper extends Scraper {
     }
 
     /**
-     * Henter full tekst (overskrift, ingress og brødtekst) fra et
-     * VG-artikkeldokument.
+     * Henter full tekst (overskrift, ingress og brødtekst) fra et VG-artikkeldokument.
      *
      * @param doc Artikkeldokument
      * @return Samlet tekst fra artikkelen
@@ -125,9 +122,7 @@ public class VGScraper extends Scraper {
 
             if (!isWithinSkipContainer) {
                 if (tagName.matches("paragraph|p|sectionheader|time") && !ownText.isEmpty()) {
-                    if (isValidText(ownText)) {
                         text.append(ownText).append(" ");
-                    }
                 }
             }
         }
@@ -146,29 +141,6 @@ public class VGScraper extends Scraper {
         return text.toString().trim();
     }
 
-    /**
-     * Sjekker om tekst er gyldig og ikke inneholder reklame eller irrelevante
-     * elementer.
-     *
-     * @param text Tekststreng som skal valideres
-     * @return true hvis teksten er gyldig, ellers false
-     */
-    private boolean isValidText(final String text) {
-        if (text == null) {
-            return false;
-        }
-
-        String lowerText = text.toLowerCase();
-        return !lowerText.contains("annonse")
-            && !lowerText.contains("reklame")
-            && !lowerText.contains("lytt til")
-            && !lowerText.contains("les også")
-            && !lowerText.contains("se også")
-            && !lowerText.contains("relaterte artikler")
-            && !lowerText.contains("anbefalte artikler")
-            && !lowerText.contains("play button");
-
-    }
 
     /**
      * Sjekker om et element er et barn av et gitt container-element.
@@ -189,8 +161,7 @@ public class VGScraper extends Scraper {
     }
 
     /**
-     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én
-     * operasjon.
+     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én operasjon.
      * Dette unngår å koble seg opp til samme artikkel flere ganger.
      *
      * @param extractor NorwegianNameExtractor-instans

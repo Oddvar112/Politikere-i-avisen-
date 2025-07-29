@@ -12,11 +12,9 @@ import folkestad.project.extractors.NorwegianNameExtractor;
 import folkestad.project.predicates.IsE24ArticlePredicate;
 
 /**
- * E24Scraper is a specialized Scraper for extracting articles from E24
- * frontpage.
+ * E24Scraper er en spesialisert skraper for å hente artikler fra E24-forsiden.
  * <p>
- * It efficiently processes articles and extracts person names with their
- * associated article links.
+ * Den prosesserer artikler og henter personnavn med tilhørende artikkellenker.
  * </p>
  */
 public final class E24Scraper extends Scraper {
@@ -24,19 +22,20 @@ public final class E24Scraper extends Scraper {
     private final IsE24ArticlePredicate articlePredicate = new IsE24ArticlePredicate();
 
     /**
-     * Constructs a new E24Scraper for the given URL.
+     * Oppretter en ny E24Scraper for de gitte URL-ene.
      *
-     * @param urls the URLs to scrape
+     * @param urls Liste med URL-er som skal skrapes
      */
     public E24Scraper(final ArrayList<String> urls) {
         super(urls);
     }
 
     /**
-     * Extracts the main article content from the given document.
-     * Based on DOM structure: main → heading + paragraph elements
-     * @param doc the article document
-     * @return the concatenated text from main article content
+     * Henter hovedinnholdet fra en E24-artikkel.
+     * Basert på DOM-struktur: main → overskrift og avsnittselementer.
+     *
+     * @param doc Dokumentet som skal analyseres
+     * @return Samlet tekst fra hovedinnholdet
      */
     @Override
     public String getAllText(final Document doc) {
@@ -61,8 +60,7 @@ public final class E24Scraper extends Scraper {
     }
 
     /**
-     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én
-     * operasjon.
+     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én operasjon.
      * Dette unngår å koble seg opp til samme artikkel flere ganger.
      *
      * @param extractor NorwegianNameExtractor-instans

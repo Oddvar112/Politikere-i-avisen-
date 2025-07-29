@@ -41,23 +41,20 @@ public abstract class Scraper {
     }
 
     /**
-     * Starts the scraping process and collects all text from the main URL.
-     */
-    /**
-     * Starts the scraping process and collects all text from the main URL.
+     * Starter skrapingen og henter all tekst fra hoved-URL-en.
      *
-     * @param url the URL to scrape
+     * @param url URL-en som skal skrapes
      */
     public void startScraping(final String url) {
         this.tekst = getAllText(connectToSite(url));
     }
 
     /**
-     * Connects to the given URL and returns the parsed Jsoup Document.
+     * Kobler til gitt URL og returnerer det parse-de Jsoup-dokumentet.
      *
-     * @param url the URL to connect to
-     * @return the parsed Document
-     * @throws RuntimeException if the connection fails
+     * @param url URL-en som skal kobles til
+     * @return det parse-de dokumentet
+     * @throws RuntimeException hvis tilkoblingen feiler
      */
     protected Document connectToSite(final String url) {
         try {
@@ -70,48 +67,47 @@ public abstract class Scraper {
     }
 
     /**
-     * Returns the last fetched Jsoup Document.
+     * Returnerer det sist hentede Jsoup-dokumentet.
      *
-     * @return the Document
+     * @return Dokumentet
      */
     public Document getDoc() {
         return this.doc;
     }
 
     /**
-     * Extracts all text from the given Jsoup Document.
+     * Ekstraherer all tekst fra det gitte Jsoup-dokumentet.
      *
-     * @param doc the Document to extract text from
-     * @return the extracted text
+     * @param doc Dokumentet det skal hentes tekst fra
+     * @return Ekstrahert tekst
      */
     public String getAllText(final Document doc) {
         return doc.text();
     }
 
     /**
-     * Returns the collected text from the scraping process.
+     * Returnerer teksten som er hentet fra skrapingen.
      *
-     * @return the collected text
+     * @return Hentet tekst
      */
     public String getTekst() {
         return tekst;
     }
 
     /**
-     * Returns the URL this scraper is set to scrape.
+     * Returnerer URL-ene som denne skraperen skal skrape.
      *
-     * @return the URL
+     * @return URL-ene
      */
     public ArrayList<String> getUrl() {
         return urls;
     }
 
     /**
-     * Abstract method that subclasses must implement to get links from their
-     * source.
+     * Abstrakt metode som subklasser må implementere for å hente lenker fra sin kilde.
      *
-     * @param doc the source document (RSS feed, frontpage, etc.)
-     * @return list of article links
+     * @param doc Kildedokumentet (RSS-feed, forside, osv.)
+     * @return Liste med artikkellenker
      */
     // ...existing code...
     /**
@@ -124,10 +120,10 @@ public abstract class Scraper {
     // ...existing code...
 
     /**
-     * Prosesserer og lagrer sammendrag av en artikkel.
+     * Prosesserer og lagrer sammendraget av en artikkel.
      *
      * @param articleUrl   URL til artikkelen
-     * @param originalText den fulle artikkelteksten
+     * @param originalText Full artikkeltekst
      */
     /**
      * Processes and saves the summary of an article.
@@ -151,12 +147,11 @@ public abstract class Scraper {
     }
 
     /**
-     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én
-     * operasjon.
+     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én operasjon.
      * Nå med integrert sammendrag-generering og lagring.
      *
      * @param extractor        NorwegianNameExtractor-instans
-     * @param articlePredicate predicate for å filtrere ut kun ekte artikler
+     * @param articlePredicate Predicate for å filtrere ut kun ekte artikler
      * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
      */
     public PersonArticleIndex buildPersonArticleIndexEfficient(final NorwegianNameExtractor extractor,
