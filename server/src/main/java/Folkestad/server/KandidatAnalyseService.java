@@ -1,6 +1,6 @@
 package folkestad.server;
 
-import folkestad.project.DataDTO1;
+import folkestad.project.DataDTO;
 import folkestad.project.analysis.KandidateAnalysis;
 import folkestad.project.analysis.KildeDataAnalyzer;
 import folkestad.InnleggRepository;
@@ -43,12 +43,12 @@ public class KandidatAnalyseService {
      * @throws IllegalStateException hvis data ikke er tilgjengelig
      * @throws IllegalArgumentException hvis ukjent kilde
      */
-    public DataDTO1 getAnalyseDataForKilde(final String kilde, final LocalDateTime fraDato, final LocalDateTime tilDato) {
+    public DataDTO getAnalyseDataForKilde(final String kilde, final LocalDateTime fraDato, final LocalDateTime tilDato) {
         if (!kandidateAnalysis.erDataTilgjengelig()) {
             throw new IllegalStateException("Analyse data er ikke tilgjengelig");
         }
 
-        DataDTO1 originalData = hentCachetData(kilde);
+        DataDTO originalData = hentCachetData(kilde);
 
         if (fraDato == null || tilDato == null) {
             return originalData;
@@ -66,7 +66,7 @@ public class KandidatAnalyseService {
      * @param kilde Kilde å hente data for
      * @return DataDTO for kilden
      */
-    private DataDTO1 hentCachetData(final String kilde) {
+    private DataDTO hentCachetData(final String kilde) {
         String normalizedKilde = kilde.toLowerCase().trim();
         switch (normalizedKilde) {
             case "vg":
@@ -93,7 +93,7 @@ public class KandidatAnalyseService {
      * @param tilDato sluttdato for filtrering
      * @return filtrert dataDTO
      */
-    private DataDTO1 filtrerData(final DataDTO1 originalData, final LocalDate fraDato, final LocalDate tilDato) {
+    private DataDTO filtrerData(final DataDTO originalData, final LocalDate fraDato, final LocalDate tilDato) {
         List<Person> filtrertPersoner = originalData.getAllePersonernevnt().stream()
                 .map(person -> filtrerPerson(person, fraDato, tilDato))
                 .filter(Objects::nonNull)
@@ -139,9 +139,9 @@ public class KandidatAnalyseService {
      * @return dataDTO basert på filtrerte personer
      */
 
-    private DataDTO1 byggDataDTO(final List<Person> personer, final String kilde) {
+    private DataDTO byggDataDTO(final List<Person> personer, final String kilde) {
         if (personer.isEmpty()) {
-            return new DataDTO1(0.0, 0, new ArrayList<>(), new HashMap<>(),
+            return new DataDTO(0.0, 0, new ArrayList<>(), new HashMap<>(),
                     new HashMap<>(), new HashMap<>(), new HashMap<>(), kilde);
         }
 
@@ -167,7 +167,7 @@ public class KandidatAnalyseService {
         Map<String, Double> kjoennProsentFordeling = KildeDataAnalyzer.beregnKjoennProsent(kjoennRatio);
         Map<String, Double> partiProsentFordeling = KildeDataAnalyzer.beregnPartiProsent(partiMentions);
 
-        return new DataDTO1(
+        return new DataDTO(
                 gjennomsnittligAlder,
                 totaltAntallArtikler,
                 new ArrayList<>(personer),

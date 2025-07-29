@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import folkestad.project.DataDTO1;
+import folkestad.project.DataDTO;
 import folkestad.project.SammendragDTO;
 
 import java.time.LocalDateTime;
@@ -38,12 +38,12 @@ public class KandidatAnalyseController {
      * @return ResponseEntity containing the analysis data or error status
      */
     @GetMapping("/{kilde}")
-    public ResponseEntity<DataDTO1> getAnalyseData(
+    public ResponseEntity<DataDTO> getAnalyseData(
             @PathVariable("kilde") final String kilde,
             @RequestParam(value = "fraDato", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime fraDato,
             @RequestParam(value = "tilDato", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime tilDato) {
         try {
-            DataDTO1 result = kandidatAnalyseService.getAnalyseDataForKilde(kilde, fraDato, tilDato);
+            DataDTO result = kandidatAnalyseService.getAnalyseDataForKilde(kilde, fraDato, tilDato);
             return ResponseEntity.ok(result);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
