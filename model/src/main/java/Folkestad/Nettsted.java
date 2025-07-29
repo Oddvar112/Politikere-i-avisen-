@@ -7,91 +7,90 @@ import java.util.Optional;
 import lombok.Getter;
 
 /**
- * Enum som representerer forskjellige nyhetssider med deres URL-mønstre og kildeURLer.
+ * Enum som representerer forskjellige nyhetssider med deres URL-mønstre og
+ * kildeURLer.
  * Støtter flere URLer per nettsted for kategorier/seksjoner.
  */
 @Getter
 public enum Nettsted {
-    
-    NRK("NRK", 
-        Arrays.asList(
-            "https://www.nrk.no/toppsaker.rss",
-            "https://www.nrk.no/buskerud/toppsaker.rss",
-            "https://www.nrk.no/buskerud/siste.rss",
-            "https://www.nrk.no/innlandet/toppsaker.rss",
-            "https://www.nrk.no/innlandet/siste.rss",
-            "https://www.nrk.no/mr/toppsaker.rss",
-            "https://www.nrk.no/mr/siste.rss",
-            "https://www.nrk.no/nordland/toppsaker.rss",
-            "https://www.nrk.no/nordland/siste.rss",
-            "https://www.nrk.no/rogaland/toppsaker.rss",
-            "https://www.nrk.no/rogaland/siste.rss",
-            "https://www.nrk.no/stor-oslo/toppsaker.rss",
-            "https://www.nrk.no/stor-oslo/siste.rss",
-            "https://www.nrk.no/sorlandet/toppsaker.rss",
-            "https://www.nrk.no/sorlandet/siste.rss",
-            "https://www.nrk.no/tromsogfinnmark/toppsaker.rss",
-            "https://www.nrk.no/tromsogfinnmark/siste.rss",
-            "https://www.nrk.no/trondelag/toppsaker.rss",
-            "https://www.nrk.no/trondelag/siste.rss",
-            "https://www.nrk.no/vestfoldogtelemark/toppsaker.rss",
-            "https://www.nrk.no/vestfoldogtelemark/siste.rss",
-            "https://www.nrk.no/vestland/toppsaker.rss",
-            "https://www.nrk.no/vestland/siste.rss",
-            "https://www.nrk.no/ostfold/toppsaker.rss",
-            "https://www.nrk.no/ostfold/siste.rss",
-            "https://www.nrk.no/norge/toppsaker.rss",
-            "https://www.nrk.no/urix/toppsaker.rss",
-            "https://www.nrk.no/sapmi/oddasat.rss",
-            "https://www.nrk.no/sport/toppsaker.rss",
-            "https://www.nrk.no/kultur/toppsaker.rss",
-            "https://www.nrk.no/livsstil/toppsaker.rss",
-            "https://www.nrk.no/viten/toppsaker.rss"
-        ), 
-        "nrk.no", 
-        ScrapingMethod.RSS),
-    
-    VG("VG", 
-       Arrays.asList("https://www.vg.no/"), 
-       "vg.no", 
-       ScrapingMethod.FRONTPAGE_DOM),
-    
-    E24("E24", 
-        Arrays.asList(
-            "https://e24.no/",
-            "https://e24.no/privatoekonomi",
-            "https://e24.no/teknologi", 
-            "https://e24.no/internasjonal-oekonomi",
-            "https://e24.no/norsk-oekonomi",
-            "https://e24.no/hav-og-sjoemat",
-            "https://e24.no/energi-og-klima",
-            "https://e24.no/naeringsliv",
-            "https://e24.no/boers-og-finans",
-            "https://e24.no/siste"
-        ), 
-        "e24.no", 
-        ScrapingMethod.FRONTPAGE_DOM),
-    
-    AFTENPOSTEN("Aftenposten", 
-                Arrays.asList("https://www.aftenposten.no/rss"), 
-                "aftenposten.no", 
-                ScrapingMethod.RSS),
-    
-    DAGBLADET("Dagbladet", 
-              Arrays.asList("https://www.dagbladet.no/"), 
-              "dagbladet.no", 
-              ScrapingMethod.FRONTPAGE_DOM);
+
+    NRK("NRK",
+            Arrays.asList(
+                    "https://www.nrk.no/toppsaker.rss",
+                    "https://www.nrk.no/buskerud/toppsaker.rss",
+                    "https://www.nrk.no/buskerud/siste.rss",
+                    "https://www.nrk.no/innlandet/toppsaker.rss",
+                    "https://www.nrk.no/innlandet/siste.rss",
+                    "https://www.nrk.no/mr/toppsaker.rss",
+                    "https://www.nrk.no/mr/siste.rss",
+                    "https://www.nrk.no/nordland/toppsaker.rss",
+                    "https://www.nrk.no/nordland/siste.rss",
+                    "https://www.nrk.no/rogaland/toppsaker.rss",
+                    "https://www.nrk.no/rogaland/siste.rss",
+                    "https://www.nrk.no/stor-oslo/toppsaker.rss",
+                    "https://www.nrk.no/stor-oslo/siste.rss",
+                    "https://www.nrk.no/sorlandet/toppsaker.rss",
+                    "https://www.nrk.no/sorlandet/siste.rss",
+                    "https://www.nrk.no/tromsogfinnmark/toppsaker.rss",
+                    "https://www.nrk.no/tromsogfinnmark/siste.rss",
+                    "https://www.nrk.no/trondelag/toppsaker.rss",
+                    "https://www.nrk.no/trondelag/siste.rss",
+                    "https://www.nrk.no/vestfoldogtelemark/toppsaker.rss",
+                    "https://www.nrk.no/vestfoldogtelemark/siste.rss",
+                    "https://www.nrk.no/vestland/toppsaker.rss",
+                    "https://www.nrk.no/vestland/siste.rss",
+                    "https://www.nrk.no/ostfold/toppsaker.rss",
+                    "https://www.nrk.no/ostfold/siste.rss",
+                    "https://www.nrk.no/norge/toppsaker.rss",
+                    "https://www.nrk.no/urix/toppsaker.rss",
+                    "https://www.nrk.no/sapmi/oddasat.rss",
+                    "https://www.nrk.no/sport/toppsaker.rss",
+                    "https://www.nrk.no/kultur/toppsaker.rss",
+                    "https://www.nrk.no/livsstil/toppsaker.rss",
+                    "https://www.nrk.no/viten/toppsaker.rss"),
+            "nrk.no",
+            ScrapingMethod.RSS),
+
+    VG("VG",
+            Arrays.asList("https://www.vg.no/"),
+            "vg.no",
+            ScrapingMethod.FRONTPAGE_DOM),
+
+    E24("E24",
+            Arrays.asList(
+                    "https://e24.no/",
+                    "https://e24.no/privatoekonomi",
+                    "https://e24.no/teknologi",
+                    "https://e24.no/internasjonal-oekonomi",
+                    "https://e24.no/norsk-oekonomi",
+                    "https://e24.no/hav-og-sjoemat",
+                    "https://e24.no/energi-og-klima",
+                    "https://e24.no/naeringsliv",
+                    "https://e24.no/boers-og-finans",
+                    "https://e24.no/siste"),
+            "e24.no",
+            ScrapingMethod.FRONTPAGE_DOM),
+
+    AFTENPOSTEN("Aftenposten",
+            Arrays.asList("https://www.aftenposten.no/rss"),
+            "aftenposten.no",
+            ScrapingMethod.RSS),
+
+    DAGBLADET("Dagbladet",
+            Arrays.asList("https://www.dagbladet.no/"),
+            "dagbladet.no",
+            ScrapingMethod.FRONTPAGE_DOM);
 
     /**
      * Enum for å beskrive hvordan nettsiden scrapers.
      */
     public enum ScrapingMethod {
-        RSS,           // Scraper via RSS feed
-        FRONTPAGE_DOM  // Scraper via DOM på frontpage
+        RSS, // Scraper via RSS feed
+        FRONTPAGE_DOM // Scraper via DOM på frontpage
     }
 
     private final String displayName;
-    private final List<String> sourceUrls;  // Liste av URLer (RSS eller frontpage)
+    private final List<String> sourceUrls; // Liste av URLer (RSS eller frontpage)
     private final String domain;
     private final ScrapingMethod scrapingMethod;
 

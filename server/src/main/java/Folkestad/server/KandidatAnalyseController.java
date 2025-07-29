@@ -19,22 +19,21 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/analyse")
 public class KandidatAnalyseController {
-    
+
     @Autowired
     private KandidatAnalyseService kandidatAnalyseService;
-        
+
     /**
      * Henter analyse data for spesifisert kilde med valgfri dato-filtrering
-     * GET /api/analyse/{kilde}?fraDato=2025-01-01T00:00:00&tilDato=2025-01-31T23:59:59
+     * GET
+     * /api/analyse/{kilde}?fraDato=2025-01-01T00:00:00&tilDato=2025-01-31T23:59:59
      */
     @GetMapping("/{kilde}")
     public ResponseEntity<dataDTO> getAnalyseData(
             @PathVariable("kilde") String kilde,
-            @RequestParam(value = "fraDato", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fraDato,
-            @RequestParam(value = "tilDato", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime tilDato) {
-        
+            @RequestParam(value = "fraDato", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fraDato,
+            @RequestParam(value = "tilDato", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime tilDato) {
+
         try {
             dataDTO result = kandidatAnalyseService.getAnalyseDataForKilde(kilde, fraDato, tilDato);
             return ResponseEntity.ok(result);

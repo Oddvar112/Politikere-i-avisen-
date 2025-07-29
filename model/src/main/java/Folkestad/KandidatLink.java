@@ -17,7 +17,6 @@ import lombok.ToString;
 import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 
-
 @Entity
 @Getter
 @Setter
@@ -26,7 +25,6 @@ import java.time.LocalDateTime;
 @ToString(exclude = "kandidat")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class KandidatLink {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,7 +57,7 @@ public class KandidatLink {
     /**
      * Oppretter en KandidatLink med lenke og automatisk nettsted-identifisering.
      *
-     * @param link URL-en
+     * @param link     URL-en
      * @param kandidat Kandidaten som lenken tilhører
      * @return Ny KandidatLink med nettsted automatisk satt
      */

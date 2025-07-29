@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import folkestad.Person;
-import folkestad.PersonRepository;
 import folkestad.project.extractors.KandidatNameExtractor;
 import folkestad.project.extractors.NorwegianNameExtractor;
 import folkestad.project.scrapers.DagbladetScraper;
@@ -18,7 +16,6 @@ import folkestad.project.scrapers.E24Scraper;
 import folkestad.project.scrapers.NRKScraper;
 import folkestad.project.scrapers.VGScraper;
 import folkestad.project.scrapers.ScraperFactory;
-import folkestad.PersonLink;
 import folkestad.KandidatStortingsvalg;
 import folkestad.KandidatStortingsvalgRepository;
 import folkestad.KandidatLink;
@@ -34,8 +31,6 @@ public final class ScraperStart {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScraperStart.class);
 
-    @Autowired
-    private PersonRepository personRepository;
 
     @Autowired
     private KandidatNameExtractor kandidatNameExtractor;
@@ -47,32 +42,6 @@ public final class ScraperStart {
     private KandidatStortingsvalgRepository kandidatRepository;
     @Autowired
     private ScraperFactory scraperFactory;
-    
-    /**
-     * Starter skraping av alle personnavn fra NRK-artikler og lagrer dem med tilhørende artikkellenker.
-     */
-    public void startScrapingAllNames() {
-        LOGGER.info("=== Starter scraping av alle navn ===");
-        try {
-            ArrayList<String> urls = Nettsted.NRK.getAllSourceUrls();
-            LOGGER.info("Kobler til NRK URL: {}", urls);
-
-            
-            NRKScraper scraper = scraperFactory.createNRKScraper(urls);
-            NorwegianNameExtractor extractor = new NorwegianNameExtractor();
-
-            LOGGER.info("Bygger person-artikkel indeks...");
-            PersonArticleIndex personArticleIndex = scraper.buildPersonArticleIndexEfficient(extractor);
-            
-            LOGGER.info("Prosesserer og lagrer personer...");
-            processAndSavePersons(personArticleIndex);
-            
-            LOGGER.info("=== Scraping av alle navn fullført ===");
-        } catch (Exception e) {
-            LOGGER.error("Feil under scraping av alle navn: ", e);
-            throw e; // Re-throw for bedre debugging
-        }
-    }
 
     /**
      * Starter skraping av kandidatnavn fra NRK, VG, E24 og Dagbladet.
@@ -271,58 +240,6 @@ public final class ScraperStart {
 
         } catch (Exception e) {
             LOGGER.error("Feil under prosessering av kandidater: ", e);
-            throw e;
-        }
-    }
-
-    /**
-     * Prosesserer og lagrer personer og deres lenker fra PersonArticleIndex.
-     *
-     * @param personArticleIndex Indeks med personer og deres artikler
-     */
-    private void processAndSavePersons(PersonArticleIndex personArticleIndex) {
-        LOGGER.info("=== Prosesserer personer ===");
-        
-        try {
-            Set<String> allPersonNames = personArticleIndex.getIndex().keySet();
-            LOGGER.info("Behandler {} personnavn", allPersonNames.size());
-
-            List<Person> existingPersons = personRepository.findByNameInWithLinks(new ArrayList<>(allPersonNames));
-            Map<String, Person> existingPersonMap = existingPersons.stream()
-                    .collect(Collectors.toMap(Person::getName, person -> person));
-            List<Person> personsToSave = new ArrayList<>();
-
-            for (String personName : allPersonNames) {
-                Person person = existingPersonMap.getOrDefault(personName, new Person());
-                if (person.getName() == null) {
-                    person.setName(personName);
-                }
-                Set<String> articleUrlsForPerson = personArticleIndex.getArticlesForPerson(personName);
-                // Normaliser eksisterende linker
-                Set<String> existingLinks = person.getLinks().stream()
-                        .map(link -> link.getLink())
-                        .collect(Collectors.toSet());
-                boolean hasNewLinks = false;
-                for (String articleUrl : articleUrlsForPerson) {
-                    if (!existingLinks.contains(articleUrl)) {
-                        PersonLink personLink = PersonLink.createWithDetectedNettsted(articleUrl, person);
-                        person.addLink(personLink);
-                        hasNewLinks = true;
-                    }
-                }
-                if (person.getId() == null || hasNewLinks) {
-                    personsToSave.add(person);
-                }
-            }
-
-            if (!personsToSave.isEmpty()) {
-                LOGGER.info("Lagrer {} personer...", personsToSave.size());
-                personRepository.saveAll(personsToSave);
-                LOGGER.info("Lagring av personer fullført");
-            }
-
-        } catch (Exception e) {
-            LOGGER.error("Feil under prosessering av personer: ", e);
             throw e;
         }
     }

@@ -26,7 +26,7 @@ public class ScheduledScraper {
 
     @Autowired
     private ScraperStart scraperStart;
-    
+
     @Autowired
     private KandidateAnalysis kandidateAnalysis;
 
@@ -47,7 +47,7 @@ public class ScheduledScraper {
             LOGGER.info("Applikasjonen er under avslutning, hopper over planlagt scraping");
             return;
         }
-        
+
         LOGGER.info("=== Starter planlagt scraper ===");
         runScraperAsync();
     }
@@ -66,21 +66,21 @@ public class ScheduledScraper {
             try {
                 LOGGER.info("=== Starter asynkron scraping ===");
                 long startTime = System.currentTimeMillis();
-                
+
                 // Sjekk shutdown status før hver tung operasjon
                 if (!isShuttingDown.get()) {
                     scraperStart.startScrapingKandidatNames();
                 }
-                
+
                 if (!isShuttingDown.get()) {
                     LOGGER.info("Starter caching av analyse data...");
                     kandidateAnalysis.analyzeKandidatData();
                     LOGGER.info("Caching av analyse data fullført");
                 }
-                
+
                 long endTime = System.currentTimeMillis();
                 LOGGER.info("=== Asynkron scraping fullført på {} ms ===", (endTime - startTime));
-                
+
             } catch (Exception e) {
                 LOGGER.error("Feil under asynkron scraping: ", e);
             }
@@ -96,7 +96,7 @@ public class ScheduledScraper {
     public void onShutdown() {
         LOGGER.info("=== Forbereder avslutning av ScheduledScraper ===");
         isShuttingDown.set(true);
-        
+
         // Vent på at pågående scraping fullføres (maks 30 sekunder)
         if (currentScrapingTask != null && !currentScrapingTask.isDone()) {
             try {
@@ -107,7 +107,7 @@ public class ScheduledScraper {
                 currentScrapingTask.cancel(true);
             }
         }
-        
+
         LOGGER.info("=== ScheduledScraper avsluttet ===");
     }
 

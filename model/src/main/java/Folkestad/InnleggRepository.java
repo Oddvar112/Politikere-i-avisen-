@@ -10,12 +10,15 @@ import java.util.Optional;
 @Repository
 public interface InnleggRepository extends JpaRepository<Innlegg, Long> {
     Optional<Innlegg> findByLink(String link);
-    
+
     @Query(value = "SELECT * FROM innlegg WHERE link LIKE CONCAT(:baseUrl, '%') LIMIT 1", nativeQuery = true)
     Optional<Innlegg> findByNormalizedUrl(@Param("baseUrl") String baseUrl);
-    
+
     boolean existsByLink(String link);
+
     List<Innlegg> findBySammendragIsNotNull();
+
     long countBySammendragIsNotNull();
 
 }
+
