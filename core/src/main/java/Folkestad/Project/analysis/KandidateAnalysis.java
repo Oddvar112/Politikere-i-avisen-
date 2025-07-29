@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Service for å håndtere kandidat analyse med caching
+ * Service for å håndtere kandidat analyse med caching.
  * Holder analysedata for VG, NRK, E24 og samlet (ALT)
  */
 @Service

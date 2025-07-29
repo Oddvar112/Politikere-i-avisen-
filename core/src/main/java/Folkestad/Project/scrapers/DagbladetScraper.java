@@ -23,9 +23,9 @@ public class DagbladetScraper extends Scraper {
     private final IsDagbladetArticlePredicate articlePredicate = new IsDagbladetArticlePredicate();
 
     /**
-     * Constructs a new DagbladetScraper for the given URL.
-     * 
-     * @param url the URL to scrape
+     * Constructs a new DagbladetScraper for the given URLs.
+     *
+     * @param urls the URLs to scrape
      */
     public DagbladetScraper(final ArrayList<String> urls) {
         super(urls);
@@ -33,6 +33,12 @@ public class DagbladetScraper extends Scraper {
 
     /**
      * Henter artikkellenker fra én side (tidligere getLinks-logikk).
+     */
+    /**
+     * Henter artikkellenker fra én side (tidligere getLinks-logikk).
+     *
+     * @param doc the Jsoup Document to extract links from
+     * @return distinct list of article links
      */
     protected ArrayList<String> getlinksFrompage(final Document doc) {
         ArrayList<String> articleLinks = new ArrayList<>();
@@ -57,11 +63,17 @@ public class DagbladetScraper extends Scraper {
     /**
      * Extracts the full text (headline, intro, and body) from a Dagbladet article
      * document.
-     * 
+     *
      * @param doc the article document
      * @return the concatenated text
      */
     @Override
+    /**
+     * Extracts the full text (headline, intro, and body) from a Dagbladet article document.
+     *
+     * @param doc the article document
+     * @return the concatenated text from the article
+     */
     public String getAllText(final Document doc) {
         StringBuilder result = new StringBuilder();
 
@@ -98,8 +110,10 @@ public class DagbladetScraper extends Scraper {
             Elements paragraphs = articleContent.select("p");
             for (Element paragraph : paragraphs) {
                 String text = paragraph.text().trim();
-                if (!text.isEmpty() && !text.toLowerCase().contains("annonse") &&
-                        !text.toLowerCase().contains("reklame") && text.length() > 20) {
+                if (!text.isEmpty()
+                    && !text.toLowerCase().contains("annonse")
+                    && !text.toLowerCase().contains("reklame")
+                    && text.length() > 20) {
                     result.append(text).append(" ");
                 }
             }
@@ -127,7 +141,7 @@ public class DagbladetScraper extends Scraper {
      * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én
      * operasjon.
      * Dette unngår å koble seg opp til samme artikkel flere ganger.
-     * 
+     *
      * @param extractor NorwegianNameExtractor-instans
      * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
      */

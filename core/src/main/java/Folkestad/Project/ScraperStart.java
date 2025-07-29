@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import folkestad.project.extractors.KandidatNameExtractor;
-import folkestad.project.extractors.NorwegianNameExtractor;
+// import folkestad.project.extractors.NorwegianNameExtractor; // Removed unused import
 import folkestad.project.scrapers.DagbladetScraper;
 import folkestad.project.scrapers.E24Scraper;
 import folkestad.project.scrapers.NRKScraper;
@@ -54,14 +54,14 @@ public final class ScraperStart {
             LOGGER.info("Tester database tilkobling...");
             long kandidatCount = kandidatRepository.count();
             LOGGER.info("Fant {} kandidater i databasen", kandidatCount);
-            
+
             if (kandidatCount == 0) {
                 LOGGER.warn("Ingen kandidater funnet i databasen - kan ikke scrape kandidatnavn");
                 return;
             }
-            
+
             PersonArticleIndex combinedIndex = new PersonArticleIndex();
-            
+
             // Scrape NRK
             LOGGER.info("Starter NRK scraping...");
             try {
@@ -71,7 +71,7 @@ public final class ScraperStart {
                 NRKScraper nrkScraper = scraperFactory.createNRKScraper(urls);
                 LOGGER.info("Bygger NRK indeks...");
                 PersonArticleIndex nrkIndex = nrkScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
-                
+
                 // Legg til NRK data i kombinert indeks
                 LOGGER.info("Fant {} personer i NRK artikler", nrkIndex.getAllPersons().size());
                 for (String person : nrkIndex.getAllPersons()) {
@@ -80,16 +80,14 @@ public final class ScraperStart {
                         combinedIndex.addMention(person, article);
                     }
                 }
-                
-                
-                
+
                 LOGGER.info("NRK scraping fullført");
-                
+
             } catch (Exception e) {
                 LOGGER.error("Feil under NRK scraping: ", e);
                 // Fortsett med VG selv om NRK feiler
             }
-            
+
             // Scrape VG
             LOGGER.info("Starter VG scraping...");
             try {
@@ -99,7 +97,7 @@ public final class ScraperStart {
                 VGScraper vgScraper = scraperFactory.createVGScraper(vgUrls);
                 LOGGER.info("Bygger VG indeks...");
                 PersonArticleIndex vgIndex = vgScraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
-                
+
                 // Legg til VG data i kombinert indeks
                 LOGGER.info("Fant {} personer i VG artikler", vgIndex.getAllPersons().size());
                 for (String person : vgIndex.getAllPersons()) {
@@ -108,15 +106,15 @@ public final class ScraperStart {
                         combinedIndex.addMention(person, article);
                     }
                 }
-                
-                
-                
+
+
+
                 LOGGER.info("VG scraping fullført");
-                
+
             } catch (Exception e) {
                 LOGGER.error("Feil under VG scraping: ", e);
             }
-            
+
             // Scrape E24
             LOGGER.info("Starter E24 scraping...");
             try {
@@ -126,7 +124,7 @@ public final class ScraperStart {
                 E24Scraper e24Scraper = scraperFactory.createE24Scraper(e24Urls);
                 LOGGER.info("Bygger E24 indeks...");
                 PersonArticleIndex e24Index = e24Scraper.buildPersonArticleIndexEfficient(kandidatNameExtractor);
-                
+
                 LOGGER.info("Fant {} personer i E24 artikler", e24Index.getAllPersons().size());
                 for (String person : e24Index.getAllPersons()) {
                     Set<String> articles = e24Index.getArticlesForPerson(person);
@@ -134,16 +132,16 @@ public final class ScraperStart {
                         combinedIndex.addMention(person, article);
                     }
                 }
-                
-                
-                
+
+
+
                 LOGGER.info("E24 scraping fullført");
-                
+
             } catch (Exception e) {
                 LOGGER.error("Feil under E24 scraping: ", e);
                 // Fortsett med lagring selv om E24 feiler
             }
-            
+
             // Scrape Dagbladet
             LOGGER.info("Starter Dagbladet scraping...");
             try {
@@ -159,20 +157,20 @@ public final class ScraperStart {
                         combinedIndex.addMention(person, article);
                     }
                 }
-                
-                
-                
+
+
+
                 LOGGER.info("Dagbladet scraping fullført");
             } catch (Exception e) {
                 LOGGER.error("Feil under Dagbladet scraping: ", e);
             }
-            
+
             LOGGER.info("Totalt fant vi {} unike personer", combinedIndex.getAllPersons().size());
             LOGGER.info("Prosesserer og lagrer kandidater...");
             processAndSaveKandidater(combinedIndex);
-            
+
             LOGGER.info("=== Scraping av kandidatnavn fullført ===");
-            
+
         } catch (Exception e) {
             LOGGER.error("KRITISK FEIL under scraping av kandidatnavn: ", e);
             throw e; // Re-throw for bedre debugging
@@ -184,7 +182,7 @@ public final class ScraperStart {
      *
      * @param personArticleIndex Indeks med kandidater og deres artikler
      */
-    private void processAndSaveKandidater(PersonArticleIndex personArticleIndex) {
+    private void processAndSaveKandidater(final PersonArticleIndex personArticleIndex) {
         LOGGER.info("=== Prosesserer kandidater ===");
 
         try {

@@ -16,8 +16,8 @@ import java.util.regex.Matcher;
  */
 public class NorwegianNameExtractor {
     private static final Pattern NAME_REGEX = Pattern.compile(
-            "[A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+" +
-                    "(?:[ \\-][A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+){1,4}");
+            "[A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+"
+            + "(?:[ \\-][A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+){1,4}");
     // private CoreNLPProcessor nlpProcessor; // COMMENTED OUT
 
     /**
@@ -53,6 +53,8 @@ public class NorwegianNameExtractor {
             // List<String> nlpNames = getNlpProcessor().extractPersonNames(candidate);
             // finalNames.addAll(nlpNames);
         }
+        // Empty block: future logic for NLP name extraction can be added here
+        // Future logic for NLP name extraction can be added here
         return finalNames;
     }
 

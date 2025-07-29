@@ -47,7 +47,7 @@ public class KandidatNameExtractor extends NorwegianNameExtractor {
      * Ekstraherer kandidatnavn fra tekst ved hjelp av regex og matcher mot
      * databasen.
      * Mye enklere nå uten duplikathåndtering!
-     * 
+     *
      * @param text teksten som skal analyseres for kandidatnavn
      * @return sett med ekstraherte kandidatnavn som finnes i databasen
      */

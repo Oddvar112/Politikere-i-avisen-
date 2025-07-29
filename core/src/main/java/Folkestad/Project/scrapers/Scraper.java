@@ -23,18 +23,18 @@ import folkestad.InnleggRepository;
 public abstract class Scraper {
     private Document doc;
     private String tekst;
-    ArrayList<String> urls;
+    private ArrayList<String> urls;
 
     private InnleggRepository innleggRepository;
 
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Scraper.class);
+    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(Scraper.class);
 
     private final TextSummarizer textSummarizer = new TextSummarizer();
 
     /**
-     * Constructs a new Scraper for the given URL.
-     * 
-     * @param url the URL to scrape
+     * Constructs a new Scraper for the given URLs.
+     *
+     * @param urls the URLs to scrape
      */
     public Scraper(final ArrayList<String> urls) {
         this.urls = urls;
@@ -43,7 +43,12 @@ public abstract class Scraper {
     /**
      * Starts the scraping process and collects all text from the main URL.
      */
-    public void startScraping(String url) {
+    /**
+     * Starts the scraping process and collects all text from the main URL.
+     *
+     * @param url the URL to scrape
+     */
+    public void startScraping(final String url) {
         this.tekst = getAllText(connectToSite(url));
     }
 
@@ -59,14 +64,14 @@ public abstract class Scraper {
             Document doc = Jsoup.connect(url).get();
             return doc;
         } catch (IOException e) {
-            logger.error("Kunne ikke koble til siden: {}", url);
+            LOGGER.error("Kunne ikke koble til siden: {}", url);
             return null;
         }
     }
 
     /**
      * Returns the last fetched Jsoup Document.
-     * 
+     *
      * @return the Document
      */
     public Document getDoc() {
@@ -75,7 +80,7 @@ public abstract class Scraper {
 
     /**
      * Extracts all text from the given Jsoup Document.
-     * 
+     *
      * @param doc the Document to extract text from
      * @return the extracted text
      */
@@ -85,7 +90,7 @@ public abstract class Scraper {
 
     /**
      * Returns the collected text from the scraping process.
-     * 
+     *
      * @return the collected text
      */
     public String getTekst() {
@@ -94,7 +99,7 @@ public abstract class Scraper {
 
     /**
      * Returns the URL this scraper is set to scrape.
-     * 
+     *
      * @return the URL
      */
     public ArrayList<String> getUrl() {
@@ -104,20 +109,33 @@ public abstract class Scraper {
     /**
      * Abstract method that subclasses must implement to get links from their
      * source.
-     * 
+     *
      * @param doc the source document (RSS feed, frontpage, etc.)
      * @return list of article links
      */
-    protected abstract ArrayList<String> getlinksFrompage(Document doc);
+    // ...existing code...
+    /**
+     * Abstract method that subclasses must implement to get links from their source.
+     *
+     * @param doc the source document (RSS feed, frontpage, etc.)
+     * @return list of article links
+     */
+    protected abstract ArrayList<String> getlinksFrompage(final Document doc);
+    // ...existing code...
 
     /**
      * Prosesserer og lagrer sammendrag av en artikkel.
-     * 
+     *
      * @param articleUrl   URL til artikkelen
      * @param originalText den fulle artikkelteksten
      */
-    protected void processAndSaveSummary(String articleUrl, String originalText) {
-
+    /**
+     * Processes and saves the summary of an article.
+     *
+     * @param articleUrl   URL of the article
+     * @param originalText Full article text
+     */
+    protected void processAndSaveSummary(final String articleUrl, final String originalText) {
         if (innleggRepository != null && innleggRepository.existsByLink(articleUrl)) {
             return;
         }
@@ -136,7 +154,7 @@ public abstract class Scraper {
      * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én
      * operasjon.
      * Nå med integrert sammendrag-generering og lagring.
-     * 
+     *
      * @param extractor        NorwegianNameExtractor-instans
      * @param articlePredicate predicate for å filtrere ut kun ekte artikler
      * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
@@ -170,10 +188,14 @@ public abstract class Scraper {
         return index;
     }
 
-    public void setInnleggRepository(InnleggRepository innleggRepository) {
+    /**
+     * Sets the InnleggRepository for this scraper.
+     * Subclasses may override safely.
+     * @param innleggRepository the repository to set
+     */
+    public void setInnleggRepository(final InnleggRepository innleggRepository) {
         this.innleggRepository = innleggRepository;
     }
-
     /**
      * Normalizes a URL by removing query parameters. Subclasses may override safely.
      * @param url the URL to normalize

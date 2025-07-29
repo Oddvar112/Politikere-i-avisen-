@@ -48,14 +48,21 @@ public class KildeDataAnalyzer {
 
             if (lenkerString != null && !lenkerString.isEmpty()) {
                 String[] alleLenker = lenkerString.split(",");
-                String[] alleScrapedAt = (scrapedAtString != null && !scrapedAtString.isEmpty())
-                        ? scrapedAtString.split(",")
-                        : new String[0];
+                String[] alleScrapedAt;
+                if (scrapedAtString != null && !scrapedAtString.isEmpty()) {
+                    if (scrapedAtString.contains(",")) {
+                        alleScrapedAt = scrapedAtString.split(",");
+                    } else {
+                        alleScrapedAt = new String[]{scrapedAtString};
+                    }
+                } else {
+                    alleScrapedAt = new String[0];
+                }
 
                 List<ArtikelDTO> artikler = new ArrayList<>();
                 for (int i = 0; i < alleLenker.length; i++) {
                     String lenke = alleLenker[i].trim();
-                    if (kilde.equals("ALT") || lenke.contains(kilde)) {
+                    if ("ALT".equals(kilde) || lenke.contains(kilde)) {
                         ArtikelDTO artikkel = new ArtikelDTO();
                         artikkel.setLenke(lenke);
                         if (i < alleScrapedAt.length) {

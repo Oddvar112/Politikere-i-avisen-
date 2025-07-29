@@ -19,20 +19,20 @@ public class ScraperFactory {
      * @param url Liste med URLer som skal skrapes
      * @return NRKScraper-instans
      */
-    public NRKScraper createNRKScraper(ArrayList<String> url) {
+    public NRKScraper createNRKScraper(final ArrayList<String> url) {
         NRKScraper scraper = new NRKScraper(url);
         scraper.setInnleggRepository(innleggRepository);
         return scraper;
     }
 
- 
+
     /**
      * Oppretter og returnerer en VGScraper med repository-injeksjon.
      *
      * @param url Liste med URLer som skal skrapes
      * @return VGScraper-instans
      */
-    public VGScraper createVGScraper(ArrayList<String> url) {
+    public VGScraper createVGScraper(final ArrayList<String> url) {
         VGScraper scraper = new VGScraper(url);
         scraper.setInnleggRepository(innleggRepository);
         return scraper;
@@ -44,7 +44,7 @@ public class ScraperFactory {
      * @param url Liste med URLer som skal skrapes
      * @return E24Scraper-instans
      */
-    public E24Scraper createE24Scraper(ArrayList<String> url) {
+    public E24Scraper createE24Scraper(final ArrayList<String> url) {
         E24Scraper scraper = new E24Scraper(url);
         scraper.setInnleggRepository(innleggRepository);
         return scraper;
@@ -56,10 +56,12 @@ public class ScraperFactory {
      * @param url Liste med URLer som skal skrapes
      * @return DagbladetScraper-instans
      */
-    public DagbladetScraper createDagbladetScraper(ArrayList<String> url) {
+    public DagbladetScraper createDagbladetScraper(final ArrayList<String> url) {
         DagbladetScraper scraper = new DagbladetScraper(url);
         scraper.setInnleggRepository(innleggRepository);
         return scraper;
     }
 }
+
+// ...existing code...
 

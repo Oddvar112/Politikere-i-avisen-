@@ -39,7 +39,7 @@ public class VGScraper extends Scraper {
      * @return Liste med artikkellenker
      */
     @Override
-    protected ArrayList<String> getlinksFrompage(Document doc) {
+    protected ArrayList<String> getlinksFrompage(final Document doc) {
         Elements articles = doc.select("main article");
         ArrayList<String> articleLinks = new ArrayList<>();
 
@@ -85,14 +85,14 @@ public class VGScraper extends Scraper {
         }
 
         Elements skipContainers = mainContent.select(
-                "[class*=reference], " +
-                        "[class*=related], " +
-                        "[class*=recommendation], " +
-                        "[class*=button], " +
-                        "[class*=controls], " +
-                        "[class*=player], " +
-                        "[class*=perspective], " +
-                        "[class*=astro-island]");
+                "[class*=reference], "
+                + "[class*=related], "
+                + "[class*=recommendation], "
+                + "[class*=button], "
+                + "[class*=controls], "
+                + "[class*=player], "
+                + "[class*=perspective], "
+                + "[class*=astro-island]");
 
         Elements xigzwElements = mainContent.select("[class*=item][class*=xigzw]");
 
@@ -153,20 +153,20 @@ public class VGScraper extends Scraper {
      * @param text Tekststreng som skal valideres
      * @return true hvis teksten er gyldig, ellers false
      */
-    private boolean isValidText(String text) {
+    private boolean isValidText(final String text) {
         if (text == null) {
             return false;
         }
 
         String lowerText = text.toLowerCase();
-        return !lowerText.contains("annonse") &&
-                !lowerText.contains("reklame") &&
-                !lowerText.contains("lytt til") &&
-                !lowerText.contains("les også") &&
-                !lowerText.contains("se også") &&
-                !lowerText.contains("relaterte artikler") &&
-                !lowerText.contains("anbefalte artikler") &&
-                !lowerText.contains("play button");
+        return !lowerText.contains("annonse")
+            && !lowerText.contains("reklame")
+            && !lowerText.contains("lytt til")
+            && !lowerText.contains("les også")
+            && !lowerText.contains("se også")
+            && !lowerText.contains("relaterte artikler")
+            && !lowerText.contains("anbefalte artikler")
+            && !lowerText.contains("play button");
 
     }
 
@@ -177,7 +177,7 @@ public class VGScraper extends Scraper {
      * @param container Container-elementet
      * @return true hvis element er barn av container, ellers false
      */
-    private boolean isChildOf(Element element, Element container) {
+    private boolean isChildOf(final Element element, final Element container) {
         Element parent = element.parent();
         while (parent != null) {
             if (parent.equals(container)) {

@@ -131,13 +131,13 @@ public class TextSummarizer {
 
         for (int i = 0; i < noOfSentences; i++) {
             if (sentences.get(i).getParagraphNumber() == paraNum) {
-                // continue
+                // Block intentionally left empty for paragraph grouping
             } else {
                 paragraphs.add(paragraph);
                 paraNum++;
                 paragraph = new Paragraph(paraNum);
             }
-            paragraph.sentences.add(sentences.get(i));
+            paragraph.getSentences().add(sentences.get(i));
         }
 
         paragraphs.add(paragraph);
@@ -204,13 +204,14 @@ public class TextSummarizer {
      */
     private void createSummary() {
         for (int j = 0; j <= noOfParagraphs && j < paragraphs.size(); j++) {
-            int primarySet = paragraphs.get(j).sentences.size() / 5;
+            ArrayList<Sentence> paraSentences = paragraphs.get(j).getSentences();
+            int primarySet = paraSentences.size() / 5;
 
             // Sort based on score (importance)
-            Collections.sort(paragraphs.get(j).sentences, new SentenceComparator());
+            Collections.sort(paraSentences, new SentenceComparator());
 
-            for (int i = 0; i <= primarySet && i < paragraphs.get(j).sentences.size(); i++) {
-                contentSummary.add(paragraphs.get(j).sentences.get(i));
+            for (int i = 0; i <= primarySet && i < paraSentences.size(); i++) {
+                contentSummary.add(paraSentences.get(i));
             }
         }
 
@@ -228,9 +229,9 @@ public class TextSummarizer {
         for (Sentence sentence : contentSummary) {
             String trimmedValue = sentence.getValue().trim();
             summary.append(trimmedValue);
-            if (!trimmedValue.endsWith(".") &&
-                    !trimmedValue.endsWith("!") &&
-                    !trimmedValue.endsWith("?")) {
+            if (!trimmedValue.endsWith(".")
+                && !trimmedValue.endsWith("!")
+                && !trimmedValue.endsWith("?")) {
                 summary.append(".");
             }
             summary.append(" ");
@@ -238,7 +239,12 @@ public class TextSummarizer {
 
         int originalWordCount = getWordCount(sentences);
         int summaryWordCount = getWordCount(contentSummary);
-        double compressionRatio = originalWordCount > 0 ? (double) summaryWordCount / originalWordCount : 0.0;
+        double compressionRatio;
+        if (originalWordCount > 0) {
+            compressionRatio = (double) summaryWordCount / originalWordCount;
+        } else {
+            compressionRatio = 0.0;
+        }
 
         return new SummaryResult(
                 summary.toString().trim(),

@@ -26,18 +26,20 @@ public class IsVgArticlePredicate implements Predicate<Document> {
         Elements authorMeta = doc.select("meta[property=article:author]");
         if (!authorMeta.isEmpty()) {
             String authorContent = authorMeta.attr("content");
-            if (authorContent != null && !authorContent.trim().isEmpty() &&
-                    !authorContent.equalsIgnoreCase("vg") &&
-                    !authorContent.equalsIgnoreCase("vg.no")) {
+            if (authorContent != null
+                && !authorContent.trim().isEmpty()
+                && !authorContent.equalsIgnoreCase("vg")
+                && !authorContent.equalsIgnoreCase("vg.no")) {
                 return true;
             }
         }
         Elements authorMetaName = doc.select("meta[name=author]");
         if (!authorMetaName.isEmpty()) {
             String authorContent = authorMetaName.attr("content");
-            if (authorContent != null && !authorContent.trim().isEmpty() &&
-                    !authorContent.equalsIgnoreCase("vg") &&
-                    !authorContent.equalsIgnoreCase("vg.no")) {
+            if (authorContent != null
+                && !authorContent.trim().isEmpty()
+                && !authorContent.equalsIgnoreCase("vg")
+                && !authorContent.equalsIgnoreCase("vg.no")) {
                 return true;
             }
         }

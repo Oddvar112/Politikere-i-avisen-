@@ -2,28 +2,41 @@ package folkestad.project.TextSummarizer;
 
 import java.util.ArrayList;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Representerer et avsnitt i en tekst, med avsnittsnummer og tilhørende
  * setninger.
  */
+@Getter
+@Setter
 public class Paragraph {
     /**
      * Avsnittsnummer.
      */
-    int number;
+    private int number;
     /**
      * Liste med setninger i avsnittet.
      */
-    ArrayList<Sentence> sentences;
+    private ArrayList<Sentence> sentences;
 
     /**
      * Oppretter et nytt Paragraph-objekt med gitt nummer og tom setningsliste.
      *
      * @param number Avsnittsnummer
      */
-    public Paragraph(int number) {
+    public Paragraph(final int number) {
         this.number = number;
         this.sentences = new ArrayList<>();
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public ArrayList<Sentence> getSentences() {
+        return sentences;
     }
 }
 

@@ -79,7 +79,7 @@ public class Innlegg {
      * @param sammendrag    Sammendragstekst
      * @param originalTekst Original tekst
      */
-    public void setSammendragWithStats(String sammendrag, String originalTekst) {
+    public void setSammendragWithStats(final String sammendrag, final String originalTekst) {
         this.sammendrag = sammendrag;
         if (sammendrag != null) {
             this.antallOrdSammendrag = sammendrag.split("\\s+").length;
@@ -89,4 +89,5 @@ public class Innlegg {
         }
         calculateCompressionRatio();
     }
+
 }

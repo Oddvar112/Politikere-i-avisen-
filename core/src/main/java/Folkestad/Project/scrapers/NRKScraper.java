@@ -38,7 +38,7 @@ public class NRKScraper extends Scraper {
      * @return Liste med artikkellenker
      */
     @Override
-    protected ArrayList<String> getlinksFrompage(Document doc) {
+    protected ArrayList<String> getlinksFrompage(final Document doc) {
         Elements links = doc.select("item > link");
         return links.stream().map(link -> link.text()).collect(Collectors.toCollection(ArrayList::new));
     }
@@ -63,23 +63,22 @@ public class NRKScraper extends Scraper {
                 totalPublishedCount++;
             }
         }
-        Elements skipContainers = articleElement.select(
-                "[class*=reference], " +
-                        "[class*=image], " +
-                        "[class*=gallery], " +
-                        "[class*=galleri], " +
-                        "[class*=article-location], " +
-                        ".author, " +
-                        ".authors, " +
-                        "[class*=article-header-sidebar], " +
-                        "figure, " +
-                        "[class*=dh-infosveip], " +
-                        "[data-name*=dh-infosveip]");
-
-        Elements allElements = articleElement.select("*");
+        // Fjernet duplisert og feilaktig deklarasjon av skipContainers
+        final Elements skipContainers = articleElement.select(
+                "[class*=reference], "
+                + "[class*=image], "
+                + "[class*=gallery], "
+                + "[class*=galleri], "
+                + "[class*=article-location], "
+                + ".author, "
+                + ".authors, "
+                + "[class*=article-header-sidebar], "
+                + "figure, "
+                + "[class*=dh-infosveip], "
+                + "[data-name*=dh-infosveip]");
+        final Elements allElements = articleElement.select("*");
         int publishedFound = 0;
-
-        for (Element element : allElements) {
+        for (final Element element : allElements) {
             String tagName = element.tagName();
             String ownText = element.ownText().trim();
             String fullText = element.text().trim();
@@ -92,7 +91,7 @@ public class NRKScraper extends Scraper {
             }
 
             boolean isWithinSkipContainer = false;
-            for (Element container : skipContainers) {
+            for (final Element container : skipContainers) {
                 if (container.equals(element) || isChildOf(element, container)) {
                     isWithinSkipContainer = true;
                     break;
@@ -104,7 +103,7 @@ public class NRKScraper extends Scraper {
                     String textToAdd = "";
                     boolean foundSpecialChild = false;
 
-                    for (Element child : element.children()) {
+        for (final Element child : element.children()) {
                         if (child.tagName().equals("strong")) {
                             textToAdd = child.text();
                             foundSpecialChild = true;
@@ -113,7 +112,7 @@ public class NRKScraper extends Scraper {
                     }
 
                     if (!foundSpecialChild) {
-                        for (Element child : element.children()) {
+                        for (final Element child : element.children()) {
                             if (child.hasClass("note-container")) {
                                 Element noteButton = child.selectFirst(".note-button, button");
                                 if (noteButton != null) {
@@ -146,7 +145,7 @@ public class NRKScraper extends Scraper {
      * @param container Container-elementet
      * @return true hvis element er barn av container, ellers false
      */
-    private boolean isChildOf(Element element, Element container) {
+    private boolean isChildOf(final Element element, final Element container) {
         Element parent = element.parent();
         while (parent != null) {
             if (parent.equals(container)) {
@@ -171,7 +170,7 @@ public class NRKScraper extends Scraper {
         }
         Elements authorElements = articleElement.select(
                 "[class*=author], [class*=journalist], [class*=byline]");
-        for (Element authorElement : authorElements) {
+        for (final Element authorElement : authorElements) {
             String authorText = authorElement.text().trim();
             if (!authorText.isEmpty() && authorText.length() > 3) {
                 authorText = authorText.replace("– Journalist", "").replace("- Journalist", "").trim();
@@ -184,7 +183,11 @@ public class NRKScraper extends Scraper {
         if (result.endsWith(", ")) {
             result = result.substring(0, result.length() - 2);
         }
-        return result.isEmpty() ? "" : "Skrevet av: " + result;
+        if (result.isEmpty()) {
+            return "";
+        } else {
+            return "Skrevet av: " + result;
+        }
     }
 
     /**

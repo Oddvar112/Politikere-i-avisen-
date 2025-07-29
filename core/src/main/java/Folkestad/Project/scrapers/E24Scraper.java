@@ -25,7 +25,7 @@ public class E24Scraper extends Scraper {
 
     /**
      * Constructs a new E24Scraper for the given URL.
-     * 
+     *
      * @param urls the URLs to scrape
      */
     public E24Scraper(final ArrayList<String> urls) {
@@ -35,7 +35,7 @@ public class E24Scraper extends Scraper {
     /**
      * Extracts the full text from an E24 article by focusing on main content area.
      * Based on DOM structure: main → heading + paragraph elements
-     * 
+     *
      * @param doc the article document
      * @return the concatenated text from main article content
      */
@@ -58,7 +58,6 @@ public class E24Scraper extends Scraper {
             String textContent = paragraph.text().trim();
             text.append(textContent).append(" ");
         }
-
         return text.toString().trim();
     }
 
@@ -66,7 +65,7 @@ public class E24Scraper extends Scraper {
      * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én
      * operasjon.
      * Dette unngår å koble seg opp til samme artikkel flere ganger.
-     * 
+     *
      * @param extractor NorwegianNameExtractor-instans
      * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
      */
@@ -75,6 +74,21 @@ public class E24Scraper extends Scraper {
     }
 
     @Override
+    /**
+     * Henter alle artikkellenker fra en E24-side.
+     * Hvis klassen skal utvides, må man sikre at filtrering av lenker skjer på riktig måte.
+     *
+     * @param doc Dokumentet som skal analyseres
+     * @return Liste med artikkellenker
+     */
+    /**
+     * Henter alle artikkellenker fra en E24-side.
+     * Hvis du utvider denne klassen, må du sikre at filtrering av lenker skjer på riktig måte.
+     * For sikker utvidelse, kall super.getlinksFrompage(doc) og filtrer resultatet.
+     *
+     * @param doc Dokumentet som skal analyseres
+     * @return Liste med artikkellenker
+     */
     protected ArrayList<String> getlinksFrompage(final Document doc) {
         ArrayList<String> articleLinks = new ArrayList<>();
         Elements allLinks = doc.select("a[href]");
@@ -84,7 +98,11 @@ public class E24Scraper extends Scraper {
             if (href != null && !href.trim().isEmpty()) {
                 String fullUrl = href;
                 if (!href.startsWith("http")) {
-                    fullUrl = "https://e24.no" + (href.startsWith("/") ? href : "/" + href);
+                    if (href.startsWith("/")) {
+                        fullUrl = "https://e24.no" + href;
+                    } else {
+                        fullUrl = "https://e24.no/" + href;
+                    }
                 }
                 articleLinks.add(fullUrl);
             }
@@ -92,7 +110,6 @@ public class E24Scraper extends Scraper {
         articleLinks = articleLinks.stream()
                 .distinct()
                 .collect(Collectors.toCollection(ArrayList::new));
-
         return articleLinks;
     }
 }

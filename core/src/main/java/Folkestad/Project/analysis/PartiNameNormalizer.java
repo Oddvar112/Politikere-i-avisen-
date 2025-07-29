@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Utility klasse for å normalisere partinavnene
+ * Utility klasse for å normalisere partinavnene.
  * Mapper nynorsk versjoner til bokmål-ekvivalenter
  */
 public class PartiNameNormalizer {
@@ -47,7 +47,7 @@ public class PartiNameNormalizer {
      * @return Normalisert partinavn på bokmål med stor forbokstav. Returnerer
      *         original hvis input er tom/null.
      */
-    public static String normalizePartiName(String originalPartiNavn) {
+    public static String normalizePartiName(final String originalPartiNavn) {
         if (originalPartiNavn == null || originalPartiNavn.trim().isEmpty()) {
             return originalPartiNavn;
         }
@@ -75,7 +75,7 @@ public class PartiNameNormalizer {
      * @param input Tekststreng som skal konverteres
      * @return Tekst i title case. Returnerer original hvis input er tom/null.
      */
-    private static String toTitleCase(String input) {
+    private static String toTitleCase(final String input) {
         if (input == null || input.isEmpty()) {
             return input;
         }
@@ -104,12 +104,12 @@ public class PartiNameNormalizer {
      * @param partiNavn Partinavn som skal sjekkes
      * @return true hvis partinavn har mapping/normalisering, ellers false
      */
-    public static boolean hasMapping(String partiNavn) {
+    public static boolean hasMapping(final String partiNavn) {
         if (partiNavn == null || partiNavn.trim().isEmpty()) {
             return false;
         }
         String trimmedNavn = partiNavn.trim();
-        return PARTI_MAPPING.containsKey(trimmedNavn) ||
-                PARTI_MAPPING.containsKey(trimmedNavn.toUpperCase());
+        return PARTI_MAPPING.containsKey(trimmedNavn)
+            || PARTI_MAPPING.containsKey(trimmedNavn.toUpperCase());
     }
 }
