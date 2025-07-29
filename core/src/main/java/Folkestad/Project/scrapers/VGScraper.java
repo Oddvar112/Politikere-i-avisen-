@@ -154,9 +154,9 @@ public class VGScraper extends Scraper {
                 !lowerText.contains("se også") &&
                 !lowerText.contains("relaterte artikler") &&
                 !lowerText.contains("anbefalte artikler") &&
-                !lowerText.contains("play button") &&
-                !lowerText.contains("min");
-    }
+                !lowerText.contains("play button");
+                
+            }
 
     private boolean isChildOf(Element element, Element container) {
         Element parent = element.parent();
