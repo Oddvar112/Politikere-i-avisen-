@@ -19,7 +19,7 @@ import folkestad.project.predicates.IsE24ArticlePredicate;
  * associated article links.
  * </p>
  */
-public class E24Scraper extends Scraper {
+public final class E24Scraper extends Scraper {
 
     private final IsE24ArticlePredicate articlePredicate = new IsE24ArticlePredicate();
 
@@ -33,7 +33,7 @@ public class E24Scraper extends Scraper {
     }
 
     /**
-     * Extracts the full text from an E24 article by focusing on main content area.
+     * Extracts the main article content from the given document.
      * Based on DOM structure: main → heading + paragraph elements
      *
      * @param doc the article document
@@ -73,14 +73,6 @@ public class E24Scraper extends Scraper {
         return super.buildPersonArticleIndexEfficient(extractor, articlePredicate);
     }
 
-    @Override
-    /**
-     * Henter alle artikkellenker fra en E24-side.
-     * Hvis klassen skal utvides, må man sikre at filtrering av lenker skjer på riktig måte.
-     *
-     * @param doc Dokumentet som skal analyseres
-     * @return Liste med artikkellenker
-     */
     /**
      * Henter alle artikkellenker fra en E24-side.
      * Hvis du utvider denne klassen, må du sikre at filtrering av lenker skjer på riktig måte.

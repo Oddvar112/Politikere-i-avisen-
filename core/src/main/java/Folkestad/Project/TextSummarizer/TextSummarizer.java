@@ -130,13 +130,12 @@ public class TextSummarizer {
         Paragraph paragraph = new Paragraph(0);
 
         for (int i = 0; i < noOfSentences; i++) {
-            if (sentences.get(i).getParagraphNumber() == paraNum) {
-                // Block intentionally left empty for paragraph grouping
-            } else {
+            if (sentences.get(i).getParagraphNumber() != paraNum) {
                 paragraphs.add(paragraph);
                 paraNum++;
                 paragraph = new Paragraph(paraNum);
             }
+            // Dummy statement for Checkstyle
             paragraph.getSentences().add(sentences.get(i));
         }
 

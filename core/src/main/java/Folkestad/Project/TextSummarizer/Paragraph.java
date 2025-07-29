@@ -11,7 +11,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Paragraph {
+public final class Paragraph {
     /**
      * Avsnittsnummer.
      */

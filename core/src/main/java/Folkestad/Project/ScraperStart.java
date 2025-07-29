@@ -201,7 +201,7 @@ public final class ScraperStart {
 
             for (String kandidatName : allKandidatNames) {
                 KandidatStortingsvalg kandidat = existingKandidatMap.get(kandidatName);
-                if (kandidat != null) { 
+                if (kandidat != null) {
                     Set<String> articleUrlsForKandidat = personArticleIndex.getArticlesForPerson(kandidatName);
 
                     Set<String> existingLinks = kandidat.getLinks().stream()

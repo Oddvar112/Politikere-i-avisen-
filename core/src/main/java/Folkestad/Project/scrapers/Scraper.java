@@ -54,7 +54,7 @@ public abstract class Scraper {
 
     /**
      * Connects to the given URL and returns the parsed Jsoup Document.
-     * 
+     *
      * @param url the URL to connect to
      * @return the parsed Document
      * @throws RuntimeException if the connection fails
@@ -120,7 +120,7 @@ public abstract class Scraper {
      * @param doc the source document (RSS feed, frontpage, etc.)
      * @return list of article links
      */
-    protected abstract ArrayList<String> getlinksFrompage(final Document doc);
+    protected abstract ArrayList<String> getlinksFrompage(Document doc);
     // ...existing code...
 
     /**

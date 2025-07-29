@@ -192,7 +192,7 @@ public class VGScraper extends Scraper {
      * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én
      * operasjon.
      * Dette unngår å koble seg opp til samme artikkel flere ganger.
-     * 
+     *
      * @param extractor NorwegianNameExtractor-instans
      * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
      */
