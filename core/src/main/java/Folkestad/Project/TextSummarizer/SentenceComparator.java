@@ -15,10 +15,10 @@ public class SentenceComparator implements Comparator<Sentence> {
      * @return -1 hvis obj1 har høyere score, 1 hvis lavere, 0 hvis lik
      */
     @Override
-    public int compare(Sentence obj1, Sentence obj2) {
-        if (obj1.score > obj2.score) {
+    public int compare(final Sentence obj1, final Sentence obj2) {
+        if (obj1.getScore() > obj2.getScore()) {
             return -1;
-        } else if (obj1.score < obj2.score) {
+        } else if (obj1.getScore() < obj2.getScore()) {
             return 1;
         } else {
             return 0;

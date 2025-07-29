@@ -28,6 +28,5 @@ public class Person {
     private List<ArtikelDTO> lenker;
     /** Antall artikler personen er nevnt i. */
     private int antallArtikler;
-    
 }
 

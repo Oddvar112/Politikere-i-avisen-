@@ -44,7 +44,7 @@ public class TextSummarizer {
      * @param inputText Tekst som skal oppsummeres
      * @return SummaryResult med sammendrag og statistikk
      */
-    public SummaryResult summarize(String inputText) {
+    public SummaryResult summarize(final String inputText) {
         if (inputText == null || inputText.trim().isEmpty()) {
             return new SummaryResult("", 0, 0, 0.0);
         }
@@ -77,7 +77,7 @@ public class TextSummarizer {
      *
      * @param inputText Tekst som skal deles opp i setninger
      */
-    private void extractSentenceFromContext(String inputText) {
+    private void extractSentenceFromContext(final String inputText) {
         String[] lines = inputText.split("\n");
         int prevChar = -1;
 
@@ -130,7 +130,7 @@ public class TextSummarizer {
         Paragraph paragraph = new Paragraph(0);
 
         for (int i = 0; i < noOfSentences; i++) {
-            if (sentences.get(i).paragraphNumber == paraNum) {
+            if (sentences.get(i).getParagraphNumber() == paraNum) {
                 // continue
             } else {
                 paragraphs.add(paragraph);
@@ -150,11 +150,11 @@ public class TextSummarizer {
      * @param str2 Andre setning
      * @return Antall felles ord
      */
-    private double noOfCommonWords(Sentence str1, Sentence str2) {
+    private double noOfCommonWords(final Sentence str1, final Sentence str2) {
         double commonCount = 0;
 
-        for (String str1Word : str1.value.split("\\s+")) {
-            for (String str2Word : str2.value.split("\\s+")) {
+        for (String str1Word : str1.getValue().split("\\s+")) {
+            for (String str2Word : str2.getValue().split("\\s+")) {
                 if (str1Word.compareToIgnoreCase(str2Word) == 0) {
                     commonCount++;
                 }
@@ -176,7 +176,7 @@ public class TextSummarizer {
                     Sentence str1 = sentences.get(i);
                     Sentence str2 = sentences.get(j);
                     intersectionMatrix[i][j] = noOfCommonWords(str1, str2)
-                            / ((double) (str1.noOfWords + str2.noOfWords) / 2);
+                            / ((double) (str1.getNoOfWords() + str2.getNoOfWords()) / 2);
                 } else {
                     intersectionMatrix[i][j] = intersectionMatrix[j][i];
                 }
@@ -194,7 +194,7 @@ public class TextSummarizer {
                 score += intersectionMatrix[i][j];
             }
             dictionary.put(sentences.get(i), score);
-            sentences.get(i).score = score;
+            sentences.get(i).setScore(score);
         }
     }
 
@@ -204,17 +204,16 @@ public class TextSummarizer {
      */
     private void createSummary() {
         for (int j = 0; j <= noOfParagraphs && j < paragraphs.size(); j++) {
-            int primary_set = paragraphs.get(j).sentences.size() / 5; // SAMME ratio som original
+            int primarySet = paragraphs.get(j).sentences.size() / 5;
 
             // Sort based on score (importance)
             Collections.sort(paragraphs.get(j).sentences, new SentenceComparator());
 
-            for (int i = 0; i <= primary_set && i < paragraphs.get(j).sentences.size(); i++) {
+            for (int i = 0; i <= primarySet && i < paragraphs.get(j).sentences.size(); i++) {
                 contentSummary.add(paragraphs.get(j).sentences.get(i));
             }
         }
 
-        // To ensure proper ordering - samme som original
         Collections.sort(contentSummary, new SentenceComparatorForSummary());
     }
 
@@ -227,10 +226,11 @@ public class TextSummarizer {
         StringBuilder summary = new StringBuilder();
 
         for (Sentence sentence : contentSummary) {
-            summary.append(sentence.value.trim());
-            if (!sentence.value.trim().endsWith(".") &&
-                    !sentence.value.trim().endsWith("!") &&
-                    !sentence.value.trim().endsWith("?")) {
+            String trimmedValue = sentence.getValue().trim();
+            summary.append(trimmedValue);
+            if (!trimmedValue.endsWith(".") &&
+                    !trimmedValue.endsWith("!") &&
+                    !trimmedValue.endsWith("?")) {
                 summary.append(".");
             }
             summary.append(" ");
@@ -253,10 +253,10 @@ public class TextSummarizer {
      * @param sentenceList Liste med setninger
      * @return Totalt antall ord
      */
-    private int getWordCount(ArrayList<Sentence> sentenceList) {
+    private int getWordCount(final ArrayList<Sentence> sentenceList) {
         int wordCount = 0;
         for (Sentence sentence : sentenceList) {
-            wordCount += sentence.noOfWords;
+            wordCount += sentence.getNoOfWords();
         }
         return wordCount;
     }

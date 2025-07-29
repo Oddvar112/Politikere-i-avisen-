@@ -1,6 +1,6 @@
 package folkestad.server;
 
-import folkestad.project.dataDTO;
+import folkestad.project.DataDTO;
 import folkestad.project.analysis.KandidateAnalysis;
 import folkestad.project.analysis.KildeDataAnalyzer;
 import folkestad.InnleggRepository;
@@ -10,15 +10,19 @@ import folkestad.project.ArtikelDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Service for å håndtere HTTP requests til kandidat analyse data
- * Inneholder all business logikk og validering
+ * Service for å håndtere HTTP requests til kandidat analyse data.
+ * Inneholder all business logikk og validering.
  */
 @Service
 public class KandidatAnalyseService {
@@ -30,22 +34,21 @@ public class KandidatAnalyseService {
     private InnleggRepository innleggRepository;
 
     /**
-     * Henter analyse data for spesifisert kilde med full validering og
-     * dato-filtrering
-     * 
-     * @param kilde   Kilde å hente data for ("vg", "nrk", "e24", "alt")
+     * Henter analyse data for spesifisert kilde med full validering og dato-filtrering.
+     *
+     * @param kilde Kilde å hente data for ("vg", "nrk", "e24", "alt")
      * @param fraDato Fra-dato for filtrering (null = ingen filtrering)
      * @param tilDato Til-dato for filtrering (null = ingen filtrering)
      * @return dataDTO for kilden, eventuelt filtrert
-     * @throws IllegalStateException    hvis data ikke er tilgjengelig
+     * @throws IllegalStateException hvis data ikke er tilgjengelig
      * @throws IllegalArgumentException hvis ukjent kilde
      */
-    public dataDTO getAnalyseDataForKilde(String kilde, LocalDateTime fraDato, LocalDateTime tilDato) {
+    public DataDTO getAnalyseDataForKilde(final String kilde, final LocalDateTime fraDato, final LocalDateTime tilDato) {
         if (!kandidateAnalysis.erDataTilgjengelig()) {
             throw new IllegalStateException("Analyse data er ikke tilgjengelig");
         }
 
-        dataDTO originalData = hentCachetData(kilde);
+        DataDTO originalData = hentCachetData(kilde);
 
         if (fraDato == null || tilDato == null) {
             return originalData;
@@ -58,9 +61,12 @@ public class KandidatAnalyseService {
     }
 
     /**
-     * Henter cachet data basert på kilde
+     * Henter cachet data basert på kilde.
+     *
+     * @param kilde Kilde å hente data for
+     * @return DataDTO for kilden
      */
-    private dataDTO hentCachetData(String kilde) {
+    private DataDTO hentCachetData(final String kilde) {
         String normalizedKilde = kilde.toLowerCase().trim();
         switch (normalizedKilde) {
             case "vg":
@@ -80,9 +86,14 @@ public class KandidatAnalyseService {
     }
 
     /**
-     * Filtrerer allerede prosessert dataDTO basert på dato-intervall
+     * Filtrerer allerede prosessert dataDTO basert på dato-intervall.
+     *
+     * @param originalData original dataDTO
+     * @param fraDato startdato for filtrering
+     * @param tilDato sluttdato for filtrering
+     * @return filtrert dataDTO
      */
-    private dataDTO filtrerData(dataDTO originalData, LocalDate fraDato, LocalDate tilDato) {
+    private DataDTO filtrerData(final DataDTO originalData, final LocalDate fraDato, final LocalDate tilDato) {
         List<Person> filtrertPersoner = originalData.getAllePersonernevnt().stream()
                 .map(person -> filtrerPerson(person, fraDato, tilDato))
                 .filter(Objects::nonNull)
@@ -92,13 +103,18 @@ public class KandidatAnalyseService {
     }
 
     /**
-     * Filtrerer en enkelt person sine artikler basert på dato
+     * Filtrerer en enkelt person sine artikler basert på dato.
+     *
+     * @param person person å filtrere
+     * @param fraDato startdato for filtrering
+     * @param tilDato sluttdato for filtrering
+     * @return filtrert Person eller null
      */
-    private Person filtrerPerson(Person person, LocalDate fraDato, LocalDate tilDato) {
+    private Person filtrerPerson(final Person person, final LocalDate fraDato, final LocalDate tilDato) {
 
         List<ArtikelDTO> filtrertArtikler = person.getLenker().stream()
-                .filter(artikkel -> !artikkel.getScraped().isBefore(fraDato) &&
-                        !artikkel.getScraped().isAfter(tilDato))
+                .filter(artikkel -> !artikkel.getScraped().isBefore(fraDato)
+                        && !artikkel.getScraped().isAfter(tilDato))
                 .collect(Collectors.toList());
 
         if (filtrertArtikler.isEmpty()) {
@@ -116,11 +132,16 @@ public class KandidatAnalyseService {
     }
 
     /**
-     * Bygger ny dataDTO basert på filtrerte personer
+     * Bygger ny dataDTO basert på filtrerte personer.
+     *
+     * @param personer liste over filtrerte personer
+     * @param kilde kilde
+     * @return dataDTO basert på filtrerte personer
      */
-    private dataDTO byggDataDTO(List<Person> personer, String kilde) {
+
+    private DataDTO byggDataDTO(final List<Person> personer, final String kilde) {
         if (personer.isEmpty()) {
-            return new dataDTO(0.0, 0, new ArrayList<>(), new HashMap<>(),
+            return new DataDTO(0.0, 0, new ArrayList<>(), new HashMap<>(),
                     new HashMap<>(), new HashMap<>(), new HashMap<>(), kilde);
         }
 
@@ -146,7 +167,7 @@ public class KandidatAnalyseService {
         Map<String, Double> kjoennProsentFordeling = KildeDataAnalyzer.beregnKjoennProsent(kjoennRatio);
         Map<String, Double> partiProsentFordeling = KildeDataAnalyzer.beregnPartiProsent(partiMentions);
 
-        return new dataDTO(
+        return new DataDTO(
                 gjennomsnittligAlder,
                 totaltAntallArtikler,
                 new ArrayList<>(personer),
@@ -158,12 +179,12 @@ public class KandidatAnalyseService {
     }
 
     /**
-     * Hent sammendrag for en gitt link
-     * 
+     * Hent sammendrag for en gitt link.
+     *
      * @param link artikkel-link
      * @return SammendragDTO eller null hvis ikke funnet
      */
-    public SammendragDTO getSammendragForLink(String link) {
+    public SammendragDTO getSammendragForLink(final String link) {
         return innleggRepository.findByLink(link)
                 .map(innlegg -> new SammendragDTO(
                         innlegg.getLink(),
@@ -174,4 +195,6 @@ public class KandidatAnalyseService {
                         innlegg.getOpprettetDato()))
                 .orElse(null);
     }
+
 }
+

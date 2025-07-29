@@ -22,7 +22,7 @@ public class SummaryResult {
      * @param summaryWordCount  Antall ord i sammendraget
      * @param compressionRatio  Kompresjonsrate
      */
-    public SummaryResult(String summary, int originalWordCount, int summaryWordCount, double compressionRatio) {
+    public SummaryResult(final String summary, final int originalWordCount, final int summaryWordCount, final double compressionRatio) {
         this.summary = summary;
         this.originalWordCount = originalWordCount;
         this.summaryWordCount = summaryWordCount;

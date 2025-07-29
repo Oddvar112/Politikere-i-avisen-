@@ -14,7 +14,7 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class dataDTO {
+public class DataDTO {
     /** Gjennomsnittlig alder for personer nevnt i artikler. */
     private double gjennomsnittligAlder;
     /** Totalt antall artikler analysert. */
@@ -24,11 +24,11 @@ public class dataDTO {
     /** Kjønnsfordeling (antall per kjønn). */
     private Map<String, Integer> kjoennRatio;
     /** Kjønnsfordeling i prosent. */
-    private Map<String, Double> kjoennProsentFordeling; 
+    private Map<String, Double> kjoennProsentFordeling;
     /** Partifordeling (antall per parti). */
     private Map<String, Integer> partiMentions;
     /** Partifordeling i prosent. */
-    private Map<String, Double> partiProsentFordeling; 
+    private Map<String, Double> partiProsentFordeling;
     /** Kilde for analysen (VG, NRK, E24, Dagbladet, ALT). */
     private String kilde;
 }

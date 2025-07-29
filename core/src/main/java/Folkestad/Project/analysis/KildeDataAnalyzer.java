@@ -1,15 +1,18 @@
 package folkestad.project.analysis;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import folkestad.project.ArtikelDTO;
+import folkestad.project.DataDTO;
 import folkestad.project.Person;
-import folkestad.project.dataDTO;
 
 /**
- * Analyserer og filtrerer kandidatdata basert på kilde
+ * Analyserer og filtrerer kandidatdata basert på kilde.
  */
 public class KildeDataAnalyzer {
 
@@ -21,10 +24,10 @@ public class KildeDataAnalyzer {
      *                "dagbladet.no", "ALT" for alle)
      * @return dataDTO med filtrerte data for valgt kilde
      */
-    public static dataDTO analyzeDataByKilde(List<Object[]> rawData, String kilde) {
+    public static DataDTO analyzeDataByKilde(final List<Object[]> rawData, final String kilde) {
 
         if (rawData == null || rawData.isEmpty()) {
-            return new dataDTO(0.0, 0, new ArrayList<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(),
+            return new DataDTO(0.0, 0, new ArrayList<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(),
                     new HashMap<>(), kilde);
         }
 
@@ -90,15 +93,20 @@ public class KildeDataAnalyzer {
             }
         }
 
-        double gjennomsnittligAlder = aldersListe.stream()
-                .mapToInt(Integer::intValue)
-                .average()
-                .orElse(0.0);
+        double gjennomsnittligAlder;
+        if (!aldersListe.isEmpty()) {
+            gjennomsnittligAlder = aldersListe.stream()
+                    .mapToInt(Integer::intValue)
+                    .average()
+                    .orElse(0.0);
+        } else {
+            gjennomsnittligAlder = 0.0;
+        }
 
         Map<String, Double> partiProsentFordeling = beregnPartiProsent(partiMentions);
         Map<String, Double> kjoennProsentFordeling = beregnKjoennProsent(kjoennRatio);
 
-        return new dataDTO(
+        return new DataDTO(
                 gjennomsnittligAlder,
                 totaltAntallArtikler,
                 new ArrayList<>(allePersoner),
@@ -115,7 +123,7 @@ public class KildeDataAnalyzer {
      * @param partiMentions Map med parti og antall artikler
      * @return Map med parti og prosent-andel (0-100)
      */
-    public static Map<String, Double> beregnPartiProsent(Map<String, Integer> partiMentions) {
+    public static Map<String, Double> beregnPartiProsent(final Map<String, Integer> partiMentions) {
         if (partiMentions == null || partiMentions.isEmpty()) {
             return new HashMap<>();
         }
@@ -140,7 +148,7 @@ public class KildeDataAnalyzer {
      * @param kjoennRatio Map med kjønn og antall personer
      * @return Map med kjønn og prosent-andel (0-100)
      */
-    public static Map<String, Double> beregnKjoennProsent(Map<String, Integer> kjoennRatio) {
+    public static Map<String, Double> beregnKjoennProsent(final Map<String, Integer> kjoennRatio) {
         if (kjoennRatio == null || kjoennRatio.isEmpty()) {
             return new HashMap<>();
         }

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class SammendragDTO {
     /** Link til artikkelen som er oppsummert. */
-    private String link; 
+    private String link;
     /** Sammendragsteksten. */
     private String sammendrag;
     /** Kompresjonsrate (sammendrag/original). */

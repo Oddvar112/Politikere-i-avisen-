@@ -38,6 +38,7 @@ public class ScheduledScraper {
         LOGGER.info("=== Applikasjon startet raskt - scraping vil starte ved første planlagte kjøring ===");
     }
 
+
     /**
      * Kjører planlagt scraper med fast intervall.
      */
@@ -53,7 +54,8 @@ public class ScheduledScraper {
     }
 
     /**
-     * Asynkron wrapper for scraping
+     * Asynkron wrapper for scraping.
+     * @return CompletableFuture<Void> som indikerer at scraping er ferdig
      */
     @Async
     public CompletableFuture<Void> runScraperAsync() {
@@ -90,7 +92,7 @@ public class ScheduledScraper {
     }
 
     /**
-     * Håndterer graceful shutdown
+     * Håndterer graceful shutdown.
      */
     @PreDestroy
     public void onShutdown() {
@@ -112,10 +114,11 @@ public class ScheduledScraper {
     }
 
     /**
-     * Lytter på context closed event for ekstra sikkerhet
+     * Lytter på context closed event for ekstra sikkerhet.
      */
     @EventListener(ContextClosedEvent.class)
     public void onContextClosed() {
         onShutdown();
     }
+
 }

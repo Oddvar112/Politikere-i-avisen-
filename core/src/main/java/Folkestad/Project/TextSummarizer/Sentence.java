@@ -1,30 +1,35 @@
 package folkestad.project.TextSummarizer;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Sentence {
     /**
      * Nummeret til avsnittet denne setningen tilhører.
      */
-    int paragraphNumber;
+    private int paragraphNumber;
     /**
      * Setningens nummer i avsnittet.
      */
-    int number;
+    private int number;
     /**
      * Lengden på setningen (antall tegn).
      */
-    int stringLength;
+    private int stringLength;
     /**
      * Score for setningen (brukes til summering).
      */
-    double score;
+    private double score;
     /**
      * Antall ord i setningen.
      */
-    int noOfWords;
+    private int noOfWords;
     /**
      * Selve setningsteksten.
      */
-    String value;
+    private String value;
 
     /**
      * Oppretter en ny Sentence med gitt nummer, tekst, lengde og avsnittsnummer.
@@ -34,7 +39,7 @@ public class Sentence {
      * @param stringLength    Lengde på setningen (antall tegn)
      * @param paragraphNumber Nummeret til avsnittet
      */
-    public Sentence(int number, String value, int stringLength, int paragraphNumber) {
+    public Sentence(final int number, final String value, final int stringLength, final int paragraphNumber) {
         this.number = number;
         this.value = value;
         this.stringLength = this.value.length();

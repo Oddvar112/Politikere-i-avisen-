@@ -1,7 +1,7 @@
 package folkestad.project.analysis;
 
 import folkestad.KandidatLinkRepository;
-import folkestad.project.dataDTO;
+import folkestad.project.DataDTO;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,11 +19,11 @@ public class KandidateAnalysis {
     @Autowired
     private KandidatLinkRepository kandidatLinkRepository;
 
-    private dataDTO dataVG;
-    private dataDTO dataNRK;
-    private dataDTO dataE24;
-    private dataDTO dataAlt;
-    private dataDTO dataDagbladet;
+    private DataDTO dataVG;
+    private DataDTO dataNRK;
+    private DataDTO dataE24;
+    private DataDTO dataAlt;
+    private DataDTO dataDagbladet;
 
     private LocalDateTime sistOppdatert;
 

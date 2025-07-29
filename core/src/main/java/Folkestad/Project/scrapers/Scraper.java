@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -175,24 +174,44 @@ public abstract class Scraper {
         this.innleggRepository = innleggRepository;
     }
 
-    protected String normalizeUrl(String url) {
-        if (url == null)
+    /**
+     * Normalizes a URL by removing query parameters. Subclasses may override safely.
+     * @param url the URL to normalize
+     * @return normalized URL without query parameters
+     */
+    protected String normalizeUrl(final String url) {
+        if (url == null) {
             return null;
+        }
         int idxQ = url.indexOf('?');
-        String base = idxQ >= 0 ? url.substring(0, idxQ) : url;
+        String base;
+        if (idxQ >= 0) {
+            base = url.substring(0, idxQ);
+        } else {
+            base = url;
+        }
         return base;
     }
 
+    /**
+     * Gets all article links from the provided URLs. Subclasses may override safely.
+     * @param urls list of URLs to scrape
+     * @return distinct list of article links
+     */
     protected ArrayList<String> getLinks(final ArrayList<String> urls) {
         ArrayList<String> allLinks = new ArrayList<>();
-        for (String url : urls) {
+        for (final String url : urls) {
             Document doc = connectToSite(url);
             if (doc != null) {
                 allLinks.addAll(getlinksFrompage(doc));
             }
         }
-        return allLinks.stream()
-                .distinct()
-                .collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<String> distinctLinks = new ArrayList<>();
+        for (String link : allLinks) {
+            if (!distinctLinks.contains(link)) {
+                distinctLinks.add(link);
+            }
+        }
+        return distinctLinks;
     }
 }
