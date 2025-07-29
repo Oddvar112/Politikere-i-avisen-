@@ -26,9 +26,8 @@ import folkestad.KandidatLinkRepository;
 import folkestad.Nettsted;
 
 /**
- * Komponent ansvarlig for skraping av NRK-artikler og utvinning av personnavn.
- * Bruker nå navnbaserte primærnøkler for kandidater, som eliminerer duplikatproblemer.
- * Oppdatert til å bruke ScraperFactory for riktig dependency injection.
+ * ScraperStart er ansvarlig for skraping av artikler og utvinning/lagring av personnavn og kandidatnavn.
+ * Bruker navnbaserte primærnøkler for kandidater og ScraperFactory for dependency injection.
  */
 @Component
 public final class ScraperStart {
@@ -50,8 +49,7 @@ public final class ScraperStart {
     private ScraperFactory scraperFactory;
     
     /**
-     * Starter skrapingprosessen for NRK-artikler.
-     * Ekstraherer personnavn fra artikler og lagrer dem med tilhørende artikkellenker.
+     * Starter skraping av alle personnavn fra NRK-artikler og lagrer dem med tilhørende artikkellenker.
      */
     public void startScrapingAllNames() {
         LOGGER.info("=== Starter scraping av alle navn ===");
@@ -77,9 +75,8 @@ public final class ScraperStart {
     }
 
     /**
-     * Starter skrapingprosessen for kandidatnavn ved hjelp av navnbaserte primærnøkler.
-     * Mye enklere nå som hvert navn er unikt i databasen.
-     * Scraper NRK, VG og E24 for å få bredere dekning.
+     * Starter skraping av kandidatnavn fra NRK, VG, E24 og Dagbladet.
+     * Bruker navnbaserte primærnøkler for å unngå duplikater.
      */
     public void startScrapingKandidatNames() {
         LOGGER.info("=== Starter scraping av kandidatnavn ===");
@@ -114,6 +111,9 @@ public final class ScraperStart {
                         combinedIndex.addMention(person, article);
                     }
                 }
+                
+                
+                
                 LOGGER.info("NRK scraping fullført");
                 
             } catch (Exception e) {
@@ -139,6 +139,9 @@ public final class ScraperStart {
                         combinedIndex.addMention(person, article);
                     }
                 }
+                
+                
+                
                 LOGGER.info("VG scraping fullført");
                 
             } catch (Exception e) {
@@ -162,6 +165,9 @@ public final class ScraperStart {
                         combinedIndex.addMention(person, article);
                     }
                 }
+                
+                
+                
                 LOGGER.info("E24 scraping fullført");
                 
             } catch (Exception e) {
@@ -184,6 +190,9 @@ public final class ScraperStart {
                         combinedIndex.addMention(person, article);
                     }
                 }
+                
+                
+                
                 LOGGER.info("Dagbladet scraping fullført");
             } catch (Exception e) {
                 LOGGER.error("Feil under Dagbladet scraping: ", e);
@@ -203,9 +212,8 @@ public final class ScraperStart {
 
     /**
      * Prosesserer og lagrer kandidater og deres lenker fra PersonArticleIndex.
-     * Mye enklere nå med navnbaserte primærnøkler - ingen duplikathåndtering nødvendig!
      *
-     * @param personArticleIndex indeksen med kandidater og deres artikler
+     * @param personArticleIndex Indeks med kandidater og deres artikler
      */
     private void processAndSaveKandidater(PersonArticleIndex personArticleIndex) {
         LOGGER.info("=== Prosesserer kandidater ===");
@@ -268,7 +276,9 @@ public final class ScraperStart {
     }
 
     /**
-     * Felles metode for å prosessere og lagre personer fra PersonArticleIndex.
+     * Prosesserer og lagrer personer og deres lenker fra PersonArticleIndex.
+     *
+     * @param personArticleIndex Indeks med personer og deres artikler
      */
     private void processAndSavePersons(PersonArticleIndex personArticleIndex) {
         LOGGER.info("=== Prosesserer personer ===");
