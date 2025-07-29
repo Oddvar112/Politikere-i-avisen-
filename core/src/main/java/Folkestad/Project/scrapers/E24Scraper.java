@@ -35,7 +35,6 @@ public final class E24Scraper extends Scraper {
     /**
      * Extracts the main article content from the given document.
      * Based on DOM structure: main → heading + paragraph elements
-     *
      * @param doc the article document
      * @return the concatenated text from main article content
      */
