@@ -23,20 +23,20 @@ public class VGScraper extends Scraper {
     private final IsVgArticlePredicate articlePredicate = new IsVgArticlePredicate();
 
     /**
-     * Constructs a new VGScraper for the given URL.
-     * 
-     * @param url the URL to scrape
+     * Oppretter en ny VGScraper for gitte URLer.
+     *
+     * @param urls Liste med URLer som skal skrapes
      */
     public VGScraper(final ArrayList<String> urls) {
         super(urls);
     }
 
     /**
-     * Extracts all article links from VG frontpage by scraping article elements
-     * under main.
-     * 
-     * @param doc the frontpage document
-     * @return list of article links
+     * Henter alle artikkellenker fra VG-forsiden ved å skrape artikkelementer under
+     * main.
+     *
+     * @param doc Forside-dokument
+     * @return Liste med artikkellenker
      */
     @Override
     protected ArrayList<String> getlinksFrompage(Document doc) {
@@ -61,11 +61,17 @@ public class VGScraper extends Scraper {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-
+    /**
+     * Henter full tekst (overskrift, ingress og brødtekst) fra et
+     * VG-artikkeldokument.
+     *
+     * @param doc Artikkeldokument
+     * @return Samlet tekst fra artikkelen
+     */
     @Override
     public String getAllText(final Document doc) {
         StringBuilder text = new StringBuilder();
-        StringBuilder xigzwText = new StringBuilder(); //tags på siden 
+        StringBuilder xigzwText = new StringBuilder(); // tags på siden
 
         Elements mainContent = doc.select("main");
 
@@ -140,7 +146,13 @@ public class VGScraper extends Scraper {
         return text.toString().trim();
     }
 
-
+    /**
+     * Sjekker om tekst er gyldig og ikke inneholder reklame eller irrelevante
+     * elementer.
+     *
+     * @param text Tekststreng som skal valideres
+     * @return true hvis teksten er gyldig, ellers false
+     */
     private boolean isValidText(String text) {
         if (text == null) {
             return false;
@@ -155,9 +167,16 @@ public class VGScraper extends Scraper {
                 !lowerText.contains("relaterte artikler") &&
                 !lowerText.contains("anbefalte artikler") &&
                 !lowerText.contains("play button");
-                
-            }
 
+    }
+
+    /**
+     * Sjekker om et element er et barn av et gitt container-element.
+     *
+     * @param element   Elementet som skal sjekkes
+     * @param container Container-elementet
+     * @return true hvis element er barn av container, ellers false
+     */
     private boolean isChildOf(Element element, Element container) {
         Element parent = element.parent();
         while (parent != null) {

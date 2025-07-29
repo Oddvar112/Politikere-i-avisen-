@@ -30,7 +30,6 @@ public abstract class Scraper {
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Scraper.class);
 
-
     private final TextSummarizer textSummarizer = new TextSummarizer();
 
     /**
@@ -125,13 +124,13 @@ public abstract class Scraper {
         }
 
         SummaryResult summaryResult = textSummarizer.summarize(originalText);
-            Innlegg innlegg = new Innlegg();
-            innlegg.setLink(articleUrl);
-            innlegg.setSammendragWithStats(summaryResult.getSummary(), originalText);
+        Innlegg innlegg = new Innlegg();
+        innlegg.setLink(articleUrl);
+        innlegg.setSammendragWithStats(summaryResult.getSummary(), originalText);
 
-            if (innleggRepository != null) {
-                innleggRepository.save(innlegg);
-            }
+        if (innleggRepository != null) {
+            innleggRepository.save(innlegg);
+        }
     }
 
     /**
@@ -183,7 +182,6 @@ public abstract class Scraper {
         String base = idxQ >= 0 ? url.substring(0, idxQ) : url;
         return base;
     }
-
 
     protected ArrayList<String> getLinks(final ArrayList<String> urls) {
         ArrayList<String> allLinks = new ArrayList<>();

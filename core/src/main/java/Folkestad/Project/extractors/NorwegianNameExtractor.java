@@ -16,49 +16,52 @@ import java.util.regex.Matcher;
  */
 public class NorwegianNameExtractor {
     private static final Pattern NAME_REGEX = Pattern.compile(
-        "[A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+" +
-        "(?:[ \\-][A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+){1,4}"
-    );
+            "[A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+" +
+                    "(?:[ \\-][A-ZÆØÅÁÉÍÓÚÝÞÐ][a-zæøåáéíóúýþð]+){1,4}");
     // private CoreNLPProcessor nlpProcessor; // COMMENTED OUT
 
     /**
      * Konstruktør som oppretter NorwegianNameExtractor.
+     *
+     * Ingen parametre.
      */
     public NorwegianNameExtractor() {
     }
 
     /*
-    private CoreNLPProcessor getNlpProcessor() {
-        if (nlpProcessor == null) {
-            nlpProcessor = new CoreNLPProcessor();
-        }
-        return nlpProcessor;
-    }
-    */
+     * private CoreNLPProcessor getNlpProcessor() {
+     * if (nlpProcessor == null) {
+     * nlpProcessor = new CoreNLPProcessor();
+     * }
+     * return nlpProcessor;
+     * }
+     */
 
     /**
-     * Ekstraherer og returnerer alle navn fra en tekst, med all logikk for merging og filtrering.
+     * Ekstraherer og returnerer alle navn fra en tekst, med all logikk for merging
+     * og filtrering.
      * Kjør norsk regex på hele teksten, så kjør NLP på alle regex-funnede navn.
      *
-     * @param text teksten som skal analyseres for navn
-     * @return sett med ekstraherte navn
+     * @param text Teksten som skal analyseres for navn
+     * @return Set med ekstraherte navn fra teksten
      */
     public Set<String> extractNames(final String text) {
         Set<String> regexNames = new HashSet<>(extractNamesWithRegex(text));
         Set<String> finalNames = new HashSet<>();
 
         for (String candidate : regexNames) {
-            //List<String> nlpNames = getNlpProcessor().extractPersonNames(candidate);
-            //finalNames.addAll(nlpNames);
+            // List<String> nlpNames = getNlpProcessor().extractPersonNames(candidate);
+            // finalNames.addAll(nlpNames);
         }
         return finalNames;
     }
 
     /**
-     * Bruker norsk regex for å hente ut navn direkte fra tekst, og filtrerer med isValidNorwegianName.
+     * Bruker norsk regex for å hente ut navn direkte fra tekst, og filtrerer med
+     * isValidNorwegianName.
      *
-     * @param text teksten som skal analyseres
-     * @return liste med navn funnet av regex
+     * @param text Teksten som skal analyseres
+     * @return Liste med navn funnet av regex
      */
     public List<String> extractNamesWithRegex(final String text) {
         List<String> names = new ArrayList<>();
@@ -83,4 +86,3 @@ public class NorwegianNameExtractor {
         return matcher.matches();
     }
 }
-

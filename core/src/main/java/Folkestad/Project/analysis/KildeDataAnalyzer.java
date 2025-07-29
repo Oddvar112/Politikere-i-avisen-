@@ -14,12 +14,12 @@ import folkestad.project.dataDTO;
 public class KildeDataAnalyzer {
 
     /**
-     * Filtrerer rådata basert på kilde og returnerer dataDTO
-     * 
+     * Filtrerer rådata basert på kilde og returnerer dataDTO.
+     *
      * @param rawData Liste med Object[] fra database
-     * @param kilde   Kilde å filtrere på ("vg.no", "nrk.no", "e24.no", "ALT" for
-     *                alle)
-     * @return dataDTO med filtrerte data
+     * @param kilde   Kilde å filtrere på ("vg.no", "nrk.no", "e24.no",
+     *                "dagbladet.no", "ALT" for alle)
+     * @return dataDTO med filtrerte data for valgt kilde
      */
     public static dataDTO analyzeDataByKilde(List<Object[]> rawData, String kilde) {
 
@@ -110,10 +110,10 @@ public class KildeDataAnalyzer {
     }
 
     /**
-     * Beregner prosentvis fordeling av parti mentions
-     * 
+     * Beregner prosentvis fordeling av parti mentions.
+     *
      * @param partiMentions Map med parti og antall artikler
-     * @return Map med parti og prosent-andel
+     * @return Map med parti og prosent-andel (0-100)
      */
     public static Map<String, Double> beregnPartiProsent(Map<String, Integer> partiMentions) {
         if (partiMentions == null || partiMentions.isEmpty()) {
@@ -135,10 +135,10 @@ public class KildeDataAnalyzer {
     }
 
     /**
-     * Beregner prosentvis fordeling av kjønn
-     * 
+     * Beregner prosentvis fordeling av kjønn.
+     *
      * @param kjoennRatio Map med kjønn og antall personer
-     * @return Map med kjønn og prosent-andel
+     * @return Map med kjønn og prosent-andel (0-100)
      */
     public static Map<String, Double> beregnKjoennProsent(Map<String, Integer> kjoennRatio) {
         if (kjoennRatio == null || kjoennRatio.isEmpty()) {

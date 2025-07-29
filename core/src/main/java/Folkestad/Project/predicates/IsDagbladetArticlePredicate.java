@@ -5,9 +5,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 /**
- * Predicate for determining if a given Jsoup Document represents a genuine Dagbladet article.
+ * Predicate for determining if a given Jsoup Document represents a genuine
+ * Dagbladet article.
  * <p>
- * All Dagbladet articles have an article:author meta tag. If the document is not an article,
+ * All Dagbladet articles have an article:author meta tag. If the document is
+ * not an article,
  * this meta tag will be missing.
  * </p>
  */

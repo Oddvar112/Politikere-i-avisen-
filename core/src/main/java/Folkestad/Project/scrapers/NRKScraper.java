@@ -23,19 +23,19 @@ public class NRKScraper extends Scraper {
     private final IsNrkArticlePredicate articlePredicate = new IsNrkArticlePredicate();
 
     /**
-     * Constructs a new NRKScraper for the given URL.
-     * 
-     * @param url the URL to scrape
+     * Oppretter en ny NRKScraper for gitte URLer.
+     *
+     * @param urls Liste med URLer som skal skrapes
      */
     public NRKScraper(final ArrayList<String> urls) {
         super(urls);
     }
 
     /**
-     * Extracts all article links from an RSS feed document.
-     * 
-     * @param doc the RSS feed document
-     * @return list of article links
+     * Henter alle artikkellenker fra et RSS-feed-dokument.
+     *
+     * @param doc RSS-feed-dokument
+     * @return Liste med artikkellenker
      */
     @Override
     protected ArrayList<String> getlinksFrompage(Document doc) {
@@ -44,10 +44,10 @@ public class NRKScraper extends Scraper {
     }
 
     /**
-     * Extracts the full text (headline, intro, and body) from an article document.
-     * 
-     * @param doc the article document
-     * @return the concatenated text
+     * Henter full tekst (overskrift, ingress og brødtekst) fra et artikkeldokument.
+     *
+     * @param doc Artikkeldokument
+     * @return Samlet tekst fra artikkelen
      */
     @Override
     public String getAllText(final Document doc) {
@@ -76,7 +76,6 @@ public class NRKScraper extends Scraper {
                         "[class*=dh-infosveip], " +
                         "[data-name*=dh-infosveip]");
 
-        // Iterer gjennom innholdet i article
         Elements allElements = articleElement.select("*");
         int publishedFound = 0;
 
@@ -85,7 +84,6 @@ public class NRKScraper extends Scraper {
             String ownText = element.ownText().trim();
             String fullText = element.text().trim();
 
-            // Sjekk om dette er et "Publisert" element (stopp-kondisjon)
             if (ownText.equals("Publisert") && totalPublishedCount > 0) {
                 publishedFound++;
                 if (publishedFound == totalPublishedCount) {
@@ -93,7 +91,6 @@ public class NRKScraper extends Scraper {
                 }
             }
 
-            // Sjekk om elementet ligger innenfor en container som skal hoppes over
             boolean isWithinSkipContainer = false;
             for (Element container : skipContainers) {
                 if (container.equals(element) || isChildOf(element, container)) {
@@ -103,12 +100,10 @@ public class NRKScraper extends Scraper {
             }
 
             if (!isWithinSkipContainer) {
-                // Samle tekst fra paragraphs og andre tekst-elementer
                 if (tagName.matches("p|div") && !fullText.isEmpty()) {
                     String textToAdd = "";
                     boolean foundSpecialChild = false;
 
-                    // 1. Sjekk om strong er direkte barn
                     for (Element child : element.children()) {
                         if (child.tagName().equals("strong")) {
                             textToAdd = child.text();
@@ -130,7 +125,6 @@ public class NRKScraper extends Scraper {
                         }
                     }
 
-                    // 3. Hvis ingen spesielle barn, bruk ownText
                     if (!foundSpecialChild) {
                         textToAdd = ownText;
                     }
@@ -145,6 +139,13 @@ public class NRKScraper extends Scraper {
         return result.toString();
     }
 
+    /**
+     * Sjekker om et element er et barn av et gitt container-element.
+     *
+     * @param element Elementet som skal sjekkes
+     * @param container Container-elementet
+     * @return true hvis element er barn av container, ellers false
+     */
     private boolean isChildOf(Element element, Element container) {
         Element parent = element.parent();
         while (parent != null) {
@@ -156,43 +157,40 @@ public class NRKScraper extends Scraper {
         return false;
     }
 
+    /**
+     * Henter forfatterinformasjon fra et artikkeldokument.
+     *
+     * @param doc Artikkeldokument
+     * @return Forfatterinfo som streng, eller tom streng hvis ikke funnet
+     */
     private String getAuthorInfo(final Document doc) {
         StringBuilder authorInfo = new StringBuilder();
-
         Element articleElement = doc.selectFirst("article");
         if (articleElement == null) {
             return "";
         }
-
-        // Finn author/journalist elementer
         Elements authorElements = articleElement.select(
                 "[class*=author], [class*=journalist], [class*=byline]");
-
         for (Element authorElement : authorElements) {
             String authorText = authorElement.text().trim();
             if (!authorText.isEmpty() && authorText.length() > 3) {
-                // Fjern "Journalist" fra teksten hvis den finnes
                 authorText = authorText.replace("– Journalist", "").replace("- Journalist", "").trim();
                 if (!authorText.isEmpty()) {
                     authorInfo.append(authorText).append(", ");
                 }
             }
         }
-
-        // Fjern siste komma og legg til "Skrevet av:"
         String result = authorInfo.toString();
         if (result.endsWith(", ")) {
             result = result.substring(0, result.length() - 2);
         }
-
         return result.isEmpty() ? "" : "Skrevet av: " + result;
     }
 
     /**
-     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én
-     * operasjon.
-     * Dette unngår å koble seg opp til samme artikkel flere ganger.
-     * 
+     * Henter artikler og bygger person-artikkel-indeks i én operasjon.
+     * Unngår å koble seg opp til samme artikkel flere ganger.
+     *
      * @param extractor NorwegianNameExtractor-instans
      * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
      */

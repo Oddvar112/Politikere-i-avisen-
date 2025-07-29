@@ -12,9 +12,11 @@ import folkestad.project.extractors.NorwegianNameExtractor;
 import folkestad.project.predicates.IsE24ArticlePredicate;
 
 /**
- * E24Scraper is a specialized Scraper for extracting articles from E24 frontpage.
+ * E24Scraper is a specialized Scraper for extracting articles from E24
+ * frontpage.
  * <p>
- * It efficiently processes articles and extracts person names with their associated article links.
+ * It efficiently processes articles and extracts person names with their
+ * associated article links.
  * </p>
  */
 public class E24Scraper extends Scraper {
@@ -23,17 +25,17 @@ public class E24Scraper extends Scraper {
 
     /**
      * Constructs a new E24Scraper for the given URL.
+     * 
      * @param urls the URLs to scrape
      */
     public E24Scraper(final ArrayList<String> urls) {
         super(urls);
     }
 
-
-
     /**
      * Extracts the full text from an E24 article by focusing on main content area.
      * Based on DOM structure: main → heading + paragraph elements
+     * 
      * @param doc the article document
      * @return the concatenated text from main article content
      */
@@ -44,24 +46,27 @@ public class E24Scraper extends Scraper {
         if (articleContent.isEmpty()) {
             return super.getAllText(doc);
         }
-        articleContent.select("[role=region]").remove(); 
+        articleContent.select("[role=region]").remove();
         articleContent.select("h2:contains(Kortversjonen)").remove();
-        articleContent.select("[data-test-tag*=teaser]").remove(); 
-        articleContent.select("a[href*='/']").remove(); 
-        articleContent.select(".advertory-e24-netboard-wrapper").remove(); 
+        articleContent.select("[data-test-tag*=teaser]").remove();
+        articleContent.select("a[href*='/']").remove();
+        articleContent.select(".advertory-e24-netboard-wrapper").remove();
         articleContent.select("[id*=netboard]").remove();
         articleContent.select("em").remove();
-        Elements paragraphs = articleContent.select("p");    
+        Elements paragraphs = articleContent.select("p");
         for (Element paragraph : paragraphs) {
             String textContent = paragraph.text().trim();
             text.append(textContent).append(" ");
         }
-        
+
         return text.toString().trim();
     }
+
     /**
-     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én operasjon.
+     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én
+     * operasjon.
      * Dette unngår å koble seg opp til samme artikkel flere ganger.
+     * 
      * @param extractor NorwegianNameExtractor-instans
      * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
      */
@@ -75,7 +80,7 @@ public class E24Scraper extends Scraper {
         Elements allLinks = doc.select("a[href]");
         for (Element link : allLinks) {
             String href = link.attr("href");
-            
+
             if (href != null && !href.trim().isEmpty()) {
                 String fullUrl = href;
                 if (!href.startsWith("http")) {
@@ -87,7 +92,8 @@ public class E24Scraper extends Scraper {
         articleLinks = articleLinks.stream()
                 .distinct()
                 .collect(Collectors.toCollection(ArrayList::new));
-        
+
         return articleLinks;
     }
 }
+

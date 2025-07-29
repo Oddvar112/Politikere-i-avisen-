@@ -11,9 +11,11 @@ import folkestad.project.extractors.NorwegianNameExtractor;
 import folkestad.project.predicates.IsDagbladetArticlePredicate;
 
 /**
- * DagbladetScraper is a specialized Scraper for extracting articles from Dagbladet RSS feeds.
+ * DagbladetScraper is a specialized Scraper for extracting articles from
+ * Dagbladet RSS feeds.
  * <p>
- * It efficiently processes articles and extracts person names with their associated article links.
+ * It efficiently processes articles and extracts person names with their
+ * associated article links.
  * </p>
  */
 public class DagbladetScraper extends Scraper {
@@ -22,6 +24,7 @@ public class DagbladetScraper extends Scraper {
 
     /**
      * Constructs a new DagbladetScraper for the given URL.
+     * 
      * @param url the URL to scrape
      */
     public DagbladetScraper(final ArrayList<String> urls) {
@@ -52,14 +55,16 @@ public class DagbladetScraper extends Scraper {
     }
 
     /**
-     * Extracts the full text (headline, intro, and body) from a Dagbladet article document.
+     * Extracts the full text (headline, intro, and body) from a Dagbladet article
+     * document.
+     * 
      * @param doc the article document
      * @return the concatenated text
      */
     @Override
     public String getAllText(final Document doc) {
         StringBuilder result = new StringBuilder();
-        
+
         Element titleElement = doc.selectFirst("meta[property=og:title]");
         String title = "";
         if (titleElement != null) {
@@ -68,7 +73,7 @@ public class DagbladetScraper extends Scraper {
                 result.append(title).append(" ");
             }
         }
-        
+
         // Extract description from og:description meta tag
         Element descriptionElement = doc.selectFirst("meta[property=og:description]");
         String description = "";
@@ -78,35 +83,35 @@ public class DagbladetScraper extends Scraper {
                 result.append(description).append(" ");
             }
         }
-        
+
         Element keywordsElement = doc.selectFirst("meta[property=vs:keywords]");
         String keywords = "";
         if (keywordsElement != null) {
             keywords = keywordsElement.attr("content").trim();
         }
-        
+
         Element articleContent = doc.selectFirst("article");
         if (articleContent != null) {
             articleContent.select(".ad, .advertisement, .promo, nav, header, footer").remove();
             articleContent.select("[class*=ad], [class*=reklame], [class*=annonse]").remove();
-            
+
             Elements paragraphs = articleContent.select("p");
             for (Element paragraph : paragraphs) {
                 String text = paragraph.text().trim();
                 if (!text.isEmpty() && !text.toLowerCase().contains("annonse") &&
-                    !text.toLowerCase().contains("reklame") && text.length() > 20) {
+                        !text.toLowerCase().contains("reklame") && text.length() > 20) {
                     result.append(text).append(" ");
                 }
             }
         }
-        
+
         String fullText = result.toString().trim();
         String marker = "Har du tips til oss?";
         int idx = fullText.indexOf(marker);
         if (idx >= 0) {
             fullText = fullText.substring(0, idx).trim();
         }
-        
+
         if (!keywords.isEmpty()) {
             if (!fullText.isEmpty()) {
                 fullText += " " + keywords;
@@ -114,12 +119,15 @@ public class DagbladetScraper extends Scraper {
                 fullText = keywords;
             }
         }
-        
+
         return fullText;
     }
+
     /**
-     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én operasjon.
+     * Effektiv metode som henter artikler og bygger person-artikkel-indeks i én
+     * operasjon.
      * Dette unngår å koble seg opp til samme artikkel flere ganger.
+     * 
      * @param extractor NorwegianNameExtractor-instans
      * @return PersonArticleIndex med alle personer og hvilke artikler de er nevnt i
      */
