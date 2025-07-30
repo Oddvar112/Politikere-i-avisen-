@@ -23,7 +23,7 @@ public class KandidatNameExtractor extends NorwegianNameExtractor {
     }
 
     /**
-     * Laster kandidatnavn - mye enklere nå med unike navn som primærnøkler!
+     * Laster kandidatnavn!
      */
     private void loadKandidatNames() {
         if (kandidatNamesMap == null) {
