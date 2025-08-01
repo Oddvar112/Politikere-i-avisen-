@@ -67,6 +67,15 @@ public class VGScraper extends Scraper {
      */
     @Override
     public String getAllText(final Document doc) {
+        StringBuilder strongText = new StringBuilder();
+        for (Element detailsEl : doc.getElementsByClass("_details_ygndg_24")) {
+            for (Element strongEl : detailsEl.select("strong")) {
+                String strong = strongEl.text().trim();
+                if (!strong.isEmpty()) {
+                    strongText.append(strong).append(" ");
+                }
+            }
+        }
         StringBuilder text = new StringBuilder();
         StringBuilder xigzwText = new StringBuilder(); // tags på siden
 
@@ -138,6 +147,20 @@ public class VGScraper extends Scraper {
             text.append(" ").append(xigzwText.toString());
         }
 
+        if (strongText.length() > 0) {
+            String[] names = strongText.toString().trim().split(" ");
+            StringBuilder formattedNames = new StringBuilder();
+            for (String name : names) {
+                if (!name.isEmpty()) {
+                    formattedNames.append(Character.toUpperCase(name.charAt(0)));
+                    if (name.length() > 1) {
+                        formattedNames.append(name.substring(1).toLowerCase());
+                    }
+                    formattedNames.append(" ");
+                }
+            }
+            text.append(formattedNames.toString().trim()).append(" ");
+        }
         return text.toString().trim();
     }
 
