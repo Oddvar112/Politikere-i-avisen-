@@ -29,7 +29,7 @@ public class KandidatNameExtractor extends NorwegianNameExtractor {
         "trygve slagsvold vedum", "vedum",
         "bjørnar moxnes", "moxnes",
         "sandra borch", "borch",
-        "peter christian frølich", "peter frølich"
+        "peter christian frølich", "peter frølich", "frølich"  // <- Legg til "frølich" også
     };
 
     public KandidatNameExtractor() {
