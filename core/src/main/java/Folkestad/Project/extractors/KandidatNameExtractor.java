@@ -72,7 +72,7 @@ public class KandidatNameExtractor extends NorwegianNameExtractor {
             "trygve slagsvold vedum", "vedum",
             "bjørnar moxnes", "moxnes",
             "sandra borch", "borch",
-            "Peter Christian Frølich", "frølich"
+            "peter christian frølich", "frølich"
         };
 
         for (String fragment : kjenteNavnFragmenter) {
