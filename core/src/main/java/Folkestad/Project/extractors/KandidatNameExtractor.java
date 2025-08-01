@@ -68,7 +68,6 @@ public class KandidatNameExtractor extends NorwegianNameExtractor {
         
         String[] kjenteNavnFragmenter = {
             "jonas gahr støre", "støre",
-            "erna solberg", "solberg", 
             "sylvi listhaug", "listhaug",
             "trygve slagsvold vedum", "vedum",
             "bjørnar moxnes", "moxnes",
